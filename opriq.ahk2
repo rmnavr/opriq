@@ -1,0 +1,217 @@
+	
+; App startup ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	; Sound of App Starting:
+	Send "{RAlt up}{Shift up}{Ctrl up}"
+    SoundBeep 440, 100
+    SoundBeep 560, 100
+    SoundBeep 680, 100
+
+; _____________________________________________________________________________/ }}}1
+; Hotkeys for App Controls ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+#SuspendExempt
+
+	*$#F1::
+	{
+		SoundBeep 580, 100
+		SoundBeep 340, 100
+		Suspend 1
+	}
+
+	*$#F2::
+	{
+		SoundBeep 340, 100
+		SoundBeep 580, 100
+		Suspend 0
+	}
+
+	*$#F3::Reload ; this hotkey will fire Window-key if it is released after F3
+
+#SuspendExempt False
+
+; _____________________________________________________________________________/ }}}1
+; Configs ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	; User setup:
+
+		single_tap_time_gap := 250
+
+	; Dev setup:
+
+		KB_Modes := {oneH: 1, twoH: 2}
+		kb_mode := KB_Modes.oneH
+
+; _____________________________________________________________________________/ }}}1
+
+	; Global/DoubleFunc/Silenced Keys:
+
+; CapsLock ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	*$CapsLock::LCtrl
+
+; _____________________________________________________________________________/ }}}1
+; Space ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+    *$Space::
+	{
+		KeyWait "Space"
+		if(A_PriorKey != "Space" or A_TimeSinceThisHotkey > single_tap_time_gap)
+		{
+			return
+		}
+		else {
+			SetKeyDelay -1 
+			Send "{Blind}{Space DownR}"
+			Sleep 10 
+			SetKeyDelay -1 
+			Send "{Blind}{Space up}"
+		}
+    }
+
+; _____________________________________________________________________________/ }}}1
+; Tab, AltTab ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+    *$Tab::
+	{
+		KeyWait "Tab"
+		if(A_PriorKey != "Tab" or A_TimeSinceThisHotkey > single_tap_time_gap)
+		{
+			return
+		}
+		else {
+			SetKeyDelay -1 
+			Send "{Blind}{Tab DownR}"
+			Sleep 10 
+			SetKeyDelay -1 
+			Send "{Blind}{Tab up}"
+		}
+    }
+
+; _____________________________________________________________________________/ }}}1
+; RAlt ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	*$RAlt::return
+
+; _____________________________________________________________________________/ }}}1
+; [`~] ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+    *$SC029::
+	{
+		Send "{Blind}{LShift DownR}"
+		KeyWait "SC029"
+		Send "{Blind}{LShift up}"
+		if(A_PriorKey != "``" or A_TimeSinceThisHotkey > single_tap_time_gap)
+		{
+			return
+		}
+		else {
+			SetKeyDelay -1 
+			Send "{Blind}{SC029 DownR}"
+			Sleep 10 
+			SetKeyDelay -1 
+			Send "{Blind}{SC029 up}"
+		}
+    }
+
+; _____________________________________________________________________________/ }}}1
+
+
+	; Layers:
+
+; Layer: Home ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	*$6::=
+	*$7::6
+	*$8::7
+	*$9::8
+	*$0::9
+	*$-::0
+	*$=::-
+
+	*$t::f
+	*$y::\
+	*$u::y
+	*$i::u
+	*$o::i
+	*$p::o
+	*$[::p
+	*$]::SC01A  ; «[»
+	*$\::SC01B  ; «]»
+
+	*$f::t
+	*$h::SC028	; «'»
+	*$j::h
+	*$k::n
+	*$l::k
+   *$`;::l
+	*$'::SC027	; «;»
+
+	*$n::SC035	; /
+	*$m::j
+	*$,::m
+	*$.::SC033	; ,
+	*$/::SC034	; .
+
+; _____________________________________________________________________________/ }}}1
+; Layer: Navigation ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+#HotIf (GetKeyState("RAlt", "P") or GetKeyState("Tab","P"))
+	   and GetKeyState("Space","P")=0
+
+	*$1::return
+	*$2::return
+	*$3::return
+	*$4::return
+	*$5::return
+	*$6::return
+	*$7::return
+	*$8::return
+	*$9::return
+	*$0::return
+	*$-::return
+	*$=::return
+
+	*$q::return
+	*$w::return
+	*$e::Up
+	*$r::return
+	*$t::return
+	*$y::return
+
+	*$u::return
+	*$i::return
+	*$o::return
+	*$p::return
+	*$[::return
+	*$]::return
+	*$\::return
+
+	*$a::return
+	*$s::Left
+	*$d::Down
+	*$f::Right
+	*$g::return
+	*$h::return
+	*$j::return
+	*$k::return
+	*$l::return
+   *$`;::return
+	*$'::return
+
+	*$z::return
+	*$x::return
+	*$c::return
+	*$v::return
+	*$b::return
+	*$n::return
+	*$m::return
+	*$,::return
+	*$.::return
+	*$/::return
+
+#HotIf
+
+
+; _____________________________________________________________________________/ }}}1
+

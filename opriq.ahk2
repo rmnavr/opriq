@@ -1,16 +1,79 @@
-	
+
+; Info ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	; Send "."		-- send lang-angostic, mod-unmodifiable symbol «.»; messes with vim-lang-keymap, works great everywhere else
+	; Send "SCxxx"	-- «physical» key of keyboard
+
+	; AltGr Issue:
+	; - AHK1: sometimes RAlt is sent as «LCtrl+RAlt», and it overwhadows initial RAlt, so it never gets unpressed
+	;   This issue occurs when KeyWait is used (maybe in some other cases)
+	; 
+	; Solutions:
+	; - Register change [RAlt → F14] works PERFECTLY
+	; - AHK2: issue still occurs, but looks like it occurs MUCH less frequently
+	;   Also, «Send RAlt up» may work, since «RAlt up» does not trigger anything really
+
+; _____________________________________________________________________________/ }}}1
+
 ; App startup ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
+    A_MaxHotkeysPerInterval := 9999
+
 	; Sound of App Starting:
-	Send "{RAlt up}{Shift up}{Ctrl up}"
+	Send "{RAlt Up}{Shift Up}{Ctrl Up}"
     SoundBeep 440, 100
     SoundBeep 560, 100
     SoundBeep 680, 100
 
 ; _____________________________________________________________________________/ }}}1
-; Hotkeys for App Controls ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; Configs ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	; User setup:
+
+		single_tap_time_gap  := 250
+		alarm_2h_time_window := -1000
+
+	; Dev setup:
+
+        right_KB_half_recently_active := FALSE
+		;KB_Modes := {oneH: 1, twoH: 2}
+		;kb_mode := KB_Modes.oneH
+
+; _____________________________________________________________________________/ }}}1
+
+; GUI: Declare ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	gui_main := Gui()
+	gui_main.Opt("+E0x20 -Caption +AlwaysOnTop -MaximizeBox +ToolWindow")
+
+	gui_2hAlarmL := gui_main.AddProgress("w20 h20 cBlue" , 100)
+	gui_2hAlarmR := gui_main.AddProgress("w20 h20 cRed"  ,   0)
+
+	; gui_main.Show()
+
+; _____________________________________________________________________________/ }}}1
+
+	; SuspendExempt hotkeys:
+
+; AppControlls, Mouse, «CapsLock» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
 #SuspendExempt
+
+	*$CapsLock::LCtrl
+
+	*$XButton1::MButton
+	*$XButton2::Return
+
+    #HotIf GetKeyState("XButton2","P")=1
+        MButton::Media_Play_Pause
+        WheelUp::Volume_Up
+        WheelDown::Volume_Down
+    #HotIf
+
+    #HotIf GetKeyState("XButton1","P")=1
+        WheelUp::WheelRight
+        WheelDown::WheelLeft
+    #HotIf
 
 	*$#F1::
 	{
@@ -28,49 +91,80 @@
 
 	*$#F3::Reload ; this hotkey will fire Window-key if it is released after F3
 
+	*$#F6::get_pressed_keys_info()
+
 #SuspendExempt False
 
 ; _____________________________________________________________________________/ }}}1
-; Configs ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [F] get_pressed_keys_info ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-	; User setup:
+; ■ names ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
 
-		single_tap_time_gap := 250
+	all_keys_names := [
+		 "F1" 	,"F2" 	,"F3" 	,"F4" 	,"F5" 	,"F6" 	,"F7" 	,"F8" 	,"F9" 	,"F10" 	,"F11" 	,"F12"
+		,"BS" 	,"Tab" 	,"Enter","Esc" 	,"Space","Del" 	,"Home" ,"End" 	,"PgUp" ,"PgDn" ,"AppsKey"
+		,"Alt" 	,"RAlt" ,"LAlt" ,"Ctrl"	,"LCtrl","RCtrl","LWin" ,"RWin" ,"Shift","LShift" ,"RShift" 	
+		,"``" 	,"1" 	,"2" 	,"3" 	,"4" 	,"5" 	,"6" 	,"7" 	,"8" 	,"9" 	,"0" 	,"-" 	,"="
+		,"q" 	,"w" 	,"e" 	,"r" 	,"t" 	,"y" 	,"u" 	,"i" 	,"o" 	,"p" 	,"[" 	,"]" 	,"\"
+		,"a" 	,"s" 	,"d" 	,"f" 	,"g" 	,"h" 	,"j" 	,"k" 	,"l" 	,"`;" 	,"'"
+		,"z" 	,"x" 	,"c" 	,"v" 	,"b" 	,"n" 	,"m" 	,"," 	,"." 	,"/"
+	]
 
-	; Dev setup:
+; ________________________________________________________________________/ }}}2
 
-		KB_Modes := {oneH: 1, twoH: 2}
-		kb_mode := KB_Modes.oneH
+    get_pressed_keys_info()
+    {
+    global
+    local physical, logical, tmp
+		physical := ""
+		logical  := ""
+		for key in all_keys_names
+		{
+			tmp := GetKeyState(key, "P")
+			if (tmp) {
+				physical := physical . " [" . key . "]"
+			}
+			tmp := GetKeyState(key)
+			if (tmp) {
+				logical := logical . " [" . key . "]"
+			}
+		}
+		MsgBox "Pressed physical:`n" . physical . "`n" . "`nPressed Logical:`n" . logical
+	}
 
 ; _____________________________________________________________________________/ }}}1
 
 	; Global/DoubleFunc/Silenced Keys:
 
-; CapsLock ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-	*$CapsLock::LCtrl
-
-; _____________________________________________________________________________/ }}}1
-; Space ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; «Space» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     *$Space::
 	{
-		KeyWait "Space"
-		if(A_PriorKey != "Space" or A_TimeSinceThisHotkey > single_tap_time_gap)
+		if (right_KB_half_recently_active)
 		{
-			return
+            SetKeyDelay -1
+            Send "{Blind}{Space DownR}"
 		}
-		else {
-			SetKeyDelay -1 
-			Send "{Blind}{Space DownR}"
-			Sleep 10 
-			SetKeyDelay -1 
-			Send "{Blind}{Space up}"
+		else
+		{
+			KeyWait "Space"
+			if (A_PriorKey != "Space" or A_TimeSinceThisHotkey > single_tap_time_gap)
+			{
+			; HOLD Mode:
+				return
+			}
+			else {
+				SetKeyDelay -1 
+				Send "{Blind}{Space DownR}"
+				Sleep 10 
+				SetKeyDelay -1 
+				Send "{Blind}{Space up}"
+			}
 		}
     }
 
 ; _____________________________________________________________________________/ }}}1
-; Tab, AltTab ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; «Tab», AltTab ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     *$Tab::
 	{
@@ -89,14 +183,16 @@
     }
 
 ; _____________________________________________________________________________/ }}}1
-; RAlt ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; «RAlt» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
 	*$RAlt::return
 
 ; _____________________________________________________________________________/ }}}1
-; [`~] ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; «`~» (Home layer) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-    *$SC029::
+	LShift & SC029::+SC029
+
+    *$SC029:: ; «`~»
 	{
 		Send "{Blind}{LShift DownR}"
 		KeyWait "SC029"
@@ -116,102 +212,291 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-
 	; Layers:
 
-; Layer: Home ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [F] remap_down, [F] remap_up, [T] timer_2hAlarm ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-	*$6::=
-	*$7::6
-	*$8::7
-	*$9::8
-	*$0::9
-	*$-::0
-	*$=::-
+	; String -> ...
+	remap_down(toKey) 
+	{
+        SetKeyDelay -1
+        Send "{Blind}{" toKey " DownR}"
+	}
 
-	*$t::f
-	*$y::\
-	*$u::y
-	*$i::u
-	*$o::i
-	*$p::o
-	*$[::p
-	*$]::SC01A  ; «[»
-	*$\::SC01B  ; «]»
+	; String -> Bool -> ...
+    remap_up(keyToUnpress, set_alarm)
+    {
+    global
+        If (set_alarm) {
+            right_KB_half_recently_active := TRUE
+            SetTimer timer_2hAlarm, alarm_2h_time_window
+			gui_2hAlarmR.Value := 100
+        }
+		SetKeyDelay -1
+		Send "{Blind}{" keyToUnpress " Up}"
+    }
 
-	*$f::t
-	*$h::SC028	; «'»
-	*$j::h
-	*$k::n
-	*$l::k
-   *$`;::l
-	*$'::SC027	; «;»
-
-	*$n::SC035	; /
-	*$m::j
-	*$,::m
-	*$.::SC033	; ,
-	*$/::SC034	; .
+    timer_2hAlarm()
+	{
+		global
+        right_KB_half_recently_active := FALSE
+		gui_2hAlarmR.Value := 0
+    }
 
 ; _____________________________________________________________________________/ }}}1
-; Layer: Navigation ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; LAYER: Home ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-#HotIf (GetKeyState("RAlt", "P") or GetKeyState("Tab","P"))
-	   and GetKeyState("Space","P")=0
+; ■ down ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
 
-	*$1::return
-	*$2::return
-	*$3::return
-	*$4::return
-	*$5::return
-	*$6::return
-	*$7::return
-	*$8::return
-	*$9::return
-	*$0::return
-	*$-::return
-	*$=::return
+	*$t::remap_down("f")
+	*$f::remap_down("t")
 
-	*$q::return
-	*$w::return
-	*$e::Up
-	*$r::return
-	*$t::return
-	*$y::return
+	*$6::remap_down("=")
+	*$7::remap_down("6")
+	*$8::remap_down("7")
+	*$9::remap_down("8")
+	*$0::remap_down("9")
+	*$-::remap_down("0")
+	*$=::remap_down("-")
 
-	*$u::return
-	*$i::return
-	*$o::return
-	*$p::return
-	*$[::return
-	*$]::return
-	*$\::return
+	*$y::remap_down("\")
+	*$u::remap_down("y")
+	*$i::remap_down("u")
+	*$o::remap_down("i")
+	*$p::remap_down("o")
+	*$[::remap_down("p")
+	*$]::remap_down("SC01A")	; «[»
+	*$\::remap_down("SC01B")	; «]»
 
-	*$a::return
-	*$s::Left
-	*$d::Down
-	*$f::Right
-	*$g::return
-	*$h::return
-	*$j::return
-	*$k::return
-	*$l::return
-   *$`;::return
-	*$'::return
+	*$h::remap_down("SC028")	; «'»
+	*$j::remap_down("h")
+	*$k::remap_down("n")
+	*$l::remap_down("k")
+   *$`;::remap_down("l")
+	*$'::remap_down("SC027")	; «;»
 
-	*$z::return
-	*$x::return
-	*$c::return
-	*$v::return
-	*$b::return
-	*$n::return
-	*$m::return
-	*$,::return
-	*$.::return
-	*$/::return
+	*$n::remap_down("SC035")	; /
+	*$m::remap_down("j")
+	*$,::remap_down("m")
+	*$.::remap_down("SC033")	; ,
+	*$/::remap_down("SC034")	; .
+
+; ________________________________________________________________________/ }}}2
+; ■ up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
+
+	*$t Up::remap_up("f"    , False)
+	*$f Up::remap_up("t"    , False)
+
+	*$6 Up::remap_up("="    , False)
+	*$7 Up::remap_up("6"    , True)
+	*$8 Up::remap_up("7"    , True)
+	*$9 Up::remap_up("8"    , True)
+	*$0 Up::remap_up("9"    , True)
+	*$- Up::remap_up("0"    , True)
+	*$= Up::remap_up("-"    , True)
+
+	*$y Up::remap_up("\"    , False)
+	*$u Up::remap_up("y"    , True)
+	*$i Up::remap_up("u"    , True)
+	*$o Up::remap_up("i"    , True)
+	*$p Up::remap_up("o"    , True)
+	*$[ Up::remap_up("p"    , True)
+	*$] Up::remap_up("SC01A", True)		; «[»
+	*$\ Up::remap_up("SC01B", True)		; «]»
+
+	*$h Up::remap_up("SC028", False)	; «'»
+	*$j Up::remap_up("h"    , True)
+	*$k Up::remap_up("n"    , True)
+	*$l Up::remap_up("k"    , True)
+   *$`; Up::remap_up("l"    , True)
+	*$' Up::remap_up("SC027", True)		; «;»
+
+	*$n Up::remap_up("SC035", False)	; /
+	*$m Up::remap_up("j"    , True)
+	*$, Up::remap_up("m"    , True)
+	*$. Up::remap_up("SC033", True)		; ,
+	*$/ Up::remap_up("SC034", True)		; .
+
+; ________________________________________________________________________/ }}}2
+
+; _____________________________________________________________________________/ }}}1
+
+; LAYER: Text2 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+#HotIf	right_KB_half_recently_active = False
+		and	GetKeyState("Space","P") = 1
+	   	and	GetKeyState("RAlt" ,"P") = 0
+		and GetKeyState("Tab"  ,"P") = 0
+
+; ■ Key «`~» (Text2 Layer) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
+ 
+	LShift & SC029::Send ","
+
+    *$SC029:: ; «`~»
+	{
+		Send "{Blind}{LShift DownR}"
+		KeyWait "SC029"
+		Send "{Blind}{LShift up}"
+		if(A_PriorKey != "``" or A_TimeSinceThisHotkey > single_tap_time_gap)
+		{
+			return
+		}
+		else {
+			Send "."
+		}
+    }
+
+; ________________________________________________________________________/ }}}2
+
+        ; FF:
+
+        *$F1::F5
+        *$F2::F6
+        *$F3::F7
+        *$F4::F8
+
+        ; Left side:
+
+        *$1::6
+        *$2::7
+        *$3::8
+        *$4::9
+        *$5::0
+        *$6::-
+        *$7::return
+        *$8::return
+        *$9::return
+        *$0::return
+        *$-::return
+        *$=::return
+
+        *$q::p
+        *$w::o
+        *$e::i
+        *$r::u
+        *$t::y
+        *$y::SC01A	; «[»
+        *$u::return
+        *$i::return
+        *$o::return
+        *$p::return
+        *$[::return
+        *$]::return
+        *$\::return
+
+        $*a::SC027	; «;»
+        $*s::l
+        $*d::k
+        $*f::n
+        $*g::h
+        $*h::SC01B	; «]»
+        $*j::return
+        $*k::return
+        $*l::return
+       $*`;::return
+        $*'::return
+
+        $*z::SC035	; «/»
+        $*x::SC034	; «.»
+        $*c::SC033	; «,»
+        $*v::m
+        $*b::j
+        $*n::return
+        $*m::return
+        $*,::return
+        $*.::return
+        $*/::return
+
+#HotIf
+
+; _____________________________________________________________________________/ }}}1
+; LAYER: Navigation ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+#HotIf	(	GetKeyState("RAlt" ,"P") = 1
+		 or GetKeyState("Tab"  ,"P") = 1
+		)
+	   	and GetKeyState("Space","P") = 0
+
+     *$F1::F9
+     *$F2::F10
+     *$F3::F11
+     *$F4::F12
+       F5::
+	    {
+            SetCapsLockState GetKeyState("CapsLock","T") ? "Off" : "On"
+            SoundBeep 220, 100
+		}
+
+      $*`::Return
+      $*1::Return  ; -> MOD Shift
+      $*2::Return  ; -> MOD Ctrl
+      $*3::Return  ; -> MOD x5
+        4::Volume_Down
+        5::Volume_Up
+        6::Media_Play_Pause
+      $*7::Return
+      $*8::Return
+        9::Send "₱"
+       !9::Send "∗"
+        0::Send "§"
+        -::Send "°"
+       +-::Send "◆"
+       ^-::Send "◇"
+        =::Send "—"
+       +=::Send "‾"
+
+      $*q::Del
+      $*w::Enter
+      $*e::Up
+      $*r::BS
+      $*t::Return
+      $*y::PgUp
+      $*u::Return
+      $*i::Return
+        o::Send "«"
+        p::Send "»"
+        [::Send "•"
+       +[::Send "✠"
+      $*]::Esc
+      $*\::Return
+
+      $*a::Home
+      $*s::Left
+      $*d::Down
+      $*f::Right
+      $*g::End
+      $*h::PgDn
+      $*j::Return
+      $*k::Return       ; -> MOD Shift
+      $*l::Return       ; -> MOD Ctrl
+     $*`;::Return       ; -> MOD Alt
+      $*'::Return       ; -> MOD 5
+
+	  $*Enter::Send "!{Enter}"
+
+        z::AppsKey
+        x::Send "←"
+       +x::Send "◄"
+        c::Send "↓"
+       +c::Send "▼"
+       ^c::Send "▽"
+       !c::Send "∇"
+        v::Send "→"
+       +v::Send "►"
+        b::Send "↑"
+       +b::Send "▲"
+       ^b::Send "△"
+       !b::Send "∆"
+      $*n::Return
+      $*m::Return       ; -> MOD Win
+      $*,::Space
+      $*.::Del
+      *$/::Tab
+	  
 
 #HotIf
 
 
 ; _____________________________________________________________________________/ }}}1
+
 

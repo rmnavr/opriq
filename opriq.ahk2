@@ -3,6 +3,8 @@
 
 	; Send "."		-- send lang-angostic, mod-unmodifiable symbol «.»; messes with vim-lang-keymap, works great everywhere else
 	; Send "SCxxx"	-- «physical» key of keyboard
+	; a::b			-- unpacks to: {b DownR} -> (repeat), {b up}
+	; Send "b"		-- unpacks to: {b}{b Up} -> (repeat)
 
 	; AltGr Issue:
 	; - AHK1: sometimes RAlt is sent as «LCtrl+RAlt», and it overwhadows initial RAlt, so it never gets unpressed
@@ -12,6 +14,21 @@
 	; - Register change [RAlt → F14] works PERFECTLY
 	; - AHK2: issue still occurs, but looks like it occurs MUCH less frequently
 	;   Also, «Send RAlt up» may work, since «RAlt up» does not trigger anything really
+
+	; Info:
+	; - Whole tracking system is needed because of this staged process:
+	;   1) [hold «w» at Home] -> w_DownR is fired repeatedly
+	;   2) [hold «Space»] -> layer changed to Text2
+	;   3) [initial «w» is now «o»] -> o_DonwR is fired repeatedly
+	;   4) There now no 1 good option:
+	;	   - Unpressing key «w» on Text2 layer will fire «o_Up», but «w_Up» will not be fired
+	;	   - Unpressing key «w» on Home layer fill fire «w_Up», but «o_Up» will not be fired
+	; - In OPRIQ.v028 I used «Send, w», which unpacks to 
+
+
+	; TODO:
+	; - not enough unpress for Tab
+	; - not enough unpress for remap_down/up on all layers
 
 ; _____________________________________________________________________________/ }}}1
 
@@ -35,13 +52,12 @@
 
 	; Dev setup:
 
-        right_KB_half_recently_active := FALSE
+        right_KB_half_recently_active := False
 		;KB_Modes := {oneH: 1, twoH: 2}
 		;kb_mode := KB_Modes.oneH
 
 ; _____________________________________________________________________________/ }}}1
-
-; GUI: Declare ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; GUI: Declare ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
 	gui_main := Gui()
 	gui_main.Opt("+E0x20 -Caption +AlwaysOnTop -MaximizeBox +ToolWindow")
@@ -52,8 +68,6 @@
 	; gui_main.Show()
 
 ; _____________________________________________________________________________/ }}}1
-
-	; SuspendExempt hotkeys:
 
 ; AppControlls, Mouse, «CapsLock» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
@@ -134,8 +148,6 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-	; Global/DoubleFunc/Silenced Keys:
-
 ; «Space» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     *$Space::
@@ -164,21 +176,29 @@
     }
 
 ; _____________________________________________________________________________/ }}}1
-; «Tab», AltTab ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; «Tab» (+ AltTab handling) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     *$Tab::
 	{
-		KeyWait "Tab"
-		if(A_PriorKey != "Tab" or A_TimeSinceThisHotkey > single_tap_time_gap)
+		if (GetKeyState("LAlt", "P")=1)
 		{
-			return
-		}
-		else {
 			SetKeyDelay -1 
 			Send "{Blind}{Tab DownR}"
-			Sleep 10 
-			SetKeyDelay -1 
-			Send "{Blind}{Tab up}"
+		}
+		else
+		{
+			KeyWait "Tab"
+			if(A_PriorKey != "Tab" or A_TimeSinceThisHotkey > single_tap_time_gap)
+			{ ; HOLD MODE:
+				return
+			}
+			else {
+				SetKeyDelay -1 
+				Send "{Blind}{Tab DownR}"
+				Sleep 10 
+				SetKeyDelay -1 
+				Send "{Blind}{Tab Up}"
+			}
 		}
     }
 
@@ -212,8 +232,6 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-	; Layers:
-
 ; [F] remap_down, [F] remap_up, [T] timer_2hAlarm ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
 	; String -> ...
@@ -224,11 +242,11 @@
 	}
 
 	; String -> Bool -> ...
-    remap_up(keyToUnpress, set_alarm)
+    remap_up(keyToUnpress, activate_alarm)
     {
     global
-        If (set_alarm) {
-            right_KB_half_recently_active := TRUE
+        If (activate_alarm) {
+            right_KB_half_recently_active := True
             SetTimer timer_2hAlarm, alarm_2h_time_window
 			gui_2hAlarmR.Value := 100
         }
@@ -239,8 +257,35 @@
     timer_2hAlarm()
 	{
 		global
-        right_KB_half_recently_active := FALSE
+        right_KB_half_recently_active := False
 		gui_2hAlarmR.Value := 0
+    }
+
+; _____________________________________________________________________________/ }}}1
+; [F] remap_withMods_down, [F] remap_withMods_up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	; String -> ...
+    remap_withMods_down(key)
+    {
+        IS_Shift        := (GetKeyState("k","P")=1 or GetKeyState("1","P")=1) ? "+" : ""
+        IS_Ctrl         := (GetKeyState("l","P")=1 or GetKeyState("2","P")=1) ? "^" : ""
+        IS_Alt          := (GetKeyState(";","P")=1) ? "!" : ""
+        IS_Win          := (GetKeyState("m","P")=1) ? "#" : ""
+        IS_x5           := (GetKeyState("'","P")=1 or GetKeyState("3","P")=1) ?  5  : 1
+		; 
+        mods_Mask       := IS_Shift . IS_Ctrl . IS_Alt . IS_Win
+        keys_To_Send    := mods_Mask . "{" . key . " DownR}"
+		
+		;
+        Loop IS_x5
+            Send "{Blind}" keys_To_Send
+    }
+
+	; String -> ...
+    remap_withMods_up(keyToUnpress)
+    {
+		SetKeyDelay -1
+		Send "{Blind}{" keyToUnpress " Up}"
     }
 
 ; _____________________________________________________________________________/ }}}1
@@ -285,6 +330,7 @@
 ; ■ up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
 
 	*$t Up::remap_up("f"    , False)
+
 	*$f Up::remap_up("t"    , False)
 
 	*$6 Up::remap_up("="    , False)
@@ -320,13 +366,12 @@
 ; ________________________________________________________________________/ }}}2
 
 ; _____________________________________________________________________________/ }}}1
-
 ; LAYER: Text2 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-#HotIf	right_KB_half_recently_active = False
-		and	GetKeyState("Space","P") = 1
+#HotIf	    GetKeyState("Space","P") = 1
 	   	and	GetKeyState("RAlt" ,"P") = 0
 		and GetKeyState("Tab"  ,"P") = 0
+		and right_KB_half_recently_active = False
 
 ; ■ Key «`~» (Text2 Layer) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
  
@@ -445,27 +490,27 @@
         =::Send "—"
        +=::Send "‾"
 
-      $*q::Del
-      $*w::Enter
-      $*e::Up
-      $*r::BS
+      $*q::remap_withMods_down("Del")
+      $*w::remap_withMods_down("Enter")
+      $*e::remap_withMods_down("Up")
+      $*r::remap_withMods_down("BS")
       $*t::Return
-      $*y::PgUp
+      $*y::remap_withMods_down("PgUp")
       $*u::Return
       $*i::Return
         o::Send "«"
         p::Send "»"
         [::Send "•"
        +[::Send "✠"
-      $*]::Esc
+      $*]::remap_withMods_down("Esc")
       $*\::Return
 
-      $*a::Home
-      $*s::Left
-      $*d::Down
-      $*f::Right
-      $*g::End
-      $*h::PgDn
+      $*a::remap_withMods_down("Home")
+      $*s::remap_withMods_down("Left")
+      $*d::remap_withMods_down("Down")
+      $*f::remap_withMods_down("Right")
+      $*g::remap_withMods_down("End")
+      $*h::remap_withMods_down("PgDn")
       $*j::Return
       $*k::Return       ; -> MOD Shift
       $*l::Return       ; -> MOD Ctrl
@@ -489,9 +534,26 @@
        !b::Send "∆"
       $*n::Return
       $*m::Return       ; -> MOD Win
-      $*,::Space
-      $*.::Del
-      *$/::Tab
+      $*,::remap_withMods_down("Space")
+      $*.::remap_withMods_down("Del")
+      *$/::remap_withMods_down("Tab")
+
+	  ; Up:
+      $*q Up::remap_withMods_up("Del")
+      $*w Up::remap_withMods_up("Enter")
+      $*e Up::remap_withMods_up("Up")
+      $*r Up::remap_withMods_up("BS")
+      $*y Up::remap_withMods_up("PgUp")
+      $*] Up::remap_withMods_up("Esc")
+      $*a Up::remap_withMods_up("Home")
+      $*s Up::remap_withMods_up("Left")
+      $*d Up::remap_withMods_up("Down")
+      $*f Up::remap_withMods_up("Right")
+      $*g Up::remap_withMods_up("End")
+      $*h Up::remap_withMods_up("PgDn")
+      $*, Up::remap_withMods_up("Space")
+      $*. Up::remap_withMods_up("Del")
+      *$/ Up::remap_withMods_up("Tab")
 	  
 
 #HotIf
@@ -499,4 +561,64 @@
 
 ; _____________________________________________________________________________/ }}}1
 
+	; =================== NEW: ============================================
 
+	KB_Layers := {Error: 0, Home: 1, Text2: 2, Text2withAlt: 3, Navi: 4, Symbols: 5}
+
+	get_cur_layer()
+	{
+		space := GetKeyState("Space", "P") ? "Space_" : ""
+		ralt  := GetKeyState("RAlt" , "P") ? "RAlt_"  : ""
+		tab   := GetKeyState("Tab"  , "P") ? "Tab_"   : ""
+		layers_mask := space . ralt . tab
+		;
+		Switch layers_mask {
+			case "":			layer := KB_Layers.Home
+			case "Space_":	    layer := KB_Layers.Text2
+			case "Space_Tab_":	layer := KB_Layers.Text2withAlt
+			case "Tab_":		layer := KB_Layers.Navi
+			case "RAlt_":		layer := KB_Layers.Navi
+			case "Space_RAlt_":	layer := KB_Layers.Symbols
+			default:			layer := KB_Layers.Error
+		}
+		return layer
+	}
+
+	; keys start from «{» to allow for sending modifiers like for example: «!{1 DownR}»
+	PgUp::send_DownR("!{1", "{2", "{3", "{4", "{5", True)
+	PgUp up::send_Up("{1", "{2", "{3", "{4", "{5")
+
+	; String -> String -> String -> String -> String -> Bool -> ...
+	send_DownR(keyHome, keyText2, keyText2Alt, keyNavi, keySmb, activate_2hAlarm) {
+		cur_layer := get_cur_layer()
+		Switch cur_layer {
+			case KB_Layers.Home :			key := keyHome
+			case KB_Layers.Text2 :			key := keyText2
+			case KB_Layers.Text2withAlt :	key := keyText2Alt
+			case KB_Layers.Navi :			key := keyNavi
+			case KB_Layers.Symbols :		key := keySmb
+			default:						key := ""
+		}
+		if (key = "") {
+			return
+		} else {
+			Send "{Blind}" key " DownR}"
+		}
+	}
+
+	send_Up(keyHome, keyText2, keyText2Alt, keyNavi, keySmb) {
+		cur_layer := get_cur_layer()
+		Switch cur_layer {
+			case KB_Layers.Home :			key := keyHome
+			case KB_Layers.Text2 :			key := keyText2
+			case KB_Layers.Text2withAlt :	key := keyText2Alt
+			case KB_Layers.Navi :			key := keyNavi
+			case KB_Layers.Symbols :		key := keySmb
+			default:						key := ""
+		}
+		if (key = "") {
+			return
+		} else {
+			Send "{Blind}" key " Up}"
+		}
+	}

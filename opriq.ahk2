@@ -1,34 +1,9 @@
 
-; Info ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; TODO ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-    ; Send "."      -- send lang-angostic, mod-unmodifiable symbol «.»; messes with vim-lang-keymap, works great everywhere else
-    ; Send "SCxxx"  -- «physical» key of keyboard
-    ; a::b          -- unpacks to: {b DownR} -> (repeat), {b up}
-    ; Send "b"      -- unpacks to: {b}{b Up} -> (repeat)
-
-    ; AltGr Issue:
-    ; - AHK1: sometimes RAlt is sent as «LCtrl+RAlt», and it overwhadows initial RAlt, so it never gets unpressed
-    ;   This issue occurs when KeyWait is used (maybe in some other cases)
-    ; 
-    ; Solutions:
-    ; - Register change [RAlt → F14] works PERFECTLY
-    ; - AHK2: issue still occurs, but looks like it occurs MUCH less frequently
-    ;   Also, «Send RAlt up» may work, since «RAlt up» does not trigger anything really
-
-    ; Info:
-    ; - Whole tracking system is needed because of this staged process:
-    ;   1) [hold «w» at Home] -> w_DownR is fired repeatedly
-    ;   2) [hold «Space»] -> layer changed to Text2
-    ;   3) [initial «w» is now «o»] -> o_DonwR is fired repeatedly
-    ;   4) There now no 1 good option:
-    ;      - Unpressing key «w» on Text2 layer will fire «o_Up», but «w_Up» will not be fired
-    ;      - Unpressing key «w» on Home layer fill fire «w_Up», but «o_Up» will not be fired
-    ; - In OPRIQ.v028 I used «Send, w», which unpacks to 
-
-
-    ; TODO:
     ; - not enough unpress for Tab
     ; - not enough unpress for remap_down/up on all layers
+    ; - reloading issues
 
 ; _____________________________________________________________________________/ }}}1
 
@@ -52,9 +27,8 @@
 
     ; Dev setup:
 
+        KB_Layers := {Error: 0, Home: 1, Text2: 2, Text2withAlt: 3, Navi: 4, Symbols: 5}
         right_KB_half_recently_active := False
-        ;KB_Modes := {oneH: 1, twoH: 2}
-        ;kb_mode := KB_Modes.oneH
 
 ; _____________________________________________________________________________/ }}}1
 ; GUI: Declare ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
@@ -62,8 +36,9 @@
     gui_main := Gui()
     gui_main.Opt("+E0x20 -Caption +AlwaysOnTop -MaximizeBox +ToolWindow")
 
-    gui_2hAlarmL := gui_main.AddProgress("w20 h20 cBlue" , 100)
-    gui_2hAlarmR := gui_main.AddProgress("w20 h20 cRed"  ,   0)
+    gui_2hAlarmL  := gui_main.AddProgress("w20 h20 cBlue" , 100)
+    gui_2hAlarmR  := gui_main.AddProgress("w20 h20 cRed"  ,   0)
+    gui_cur_layer := gui_main.AddText( , "Bubr")
 
     ; gui_main.Show()
 
@@ -117,11 +92,12 @@
     all_keys_names := [
          "F1"   ,"F2"   ,"F3"   ,"F4"   ,"F5"   ,"F6"   ,"F7"   ,"F8"   ,"F9"   ,"F10"  ,"F11"  ,"F12"
         ,"BS"   ,"Tab"  ,"Enter","Esc"  ,"Space","Del"  ,"Home" ,"End"  ,"PgUp" ,"PgDn" ,"AppsKey"
-        ,"Alt"  ,"RAlt" ,"LAlt" ,"Ctrl" ,"LCtrl","RCtrl","LWin" ,"RWin" ,"Shift","LShift" ,"RShift"     
+        ,"Alt"  ,"RAlt" ,"LAlt" ,"Ctrl" ,"LCtrl","RCtrl","LWin" ,"RWin" ,"Shift","LShift" ,"RShift"
         ,"``"   ,"1"    ,"2"    ,"3"    ,"4"    ,"5"    ,"6"    ,"7"    ,"8"    ,"9"    ,"0"    ,"-"    ,"="
         ,"q"    ,"w"    ,"e"    ,"r"    ,"t"    ,"y"    ,"u"    ,"i"    ,"o"    ,"p"    ,"["    ,"]"    ,"\"
         ,"a"    ,"s"    ,"d"    ,"f"    ,"g"    ,"h"    ,"j"    ,"k"    ,"l"    ,"`;"   ,"'"
         ,"z"    ,"x"    ,"c"    ,"v"    ,"b"    ,"n"    ,"m"    ,","    ,"."    ,"/"
+        , "Volume_Down", "Volume_Up", "Media_Play_Pause"
     ]
 
 ; ________________________________________________________________________/ }}}2
@@ -166,10 +142,10 @@
                 return
             }
             else {
-                SetKeyDelay -1 
+                SetKeyDelay -1
                 Send "{Blind}{Space DownR}"
-                Sleep 10 
-                SetKeyDelay -1 
+                Sleep 10
+                SetKeyDelay -1
                 Send "{Blind}{Space up}"
             }
         }
@@ -182,7 +158,7 @@
     {
         if (GetKeyState("LAlt", "P")=1)
         {
-            SetKeyDelay -1 
+            SetKeyDelay -1
             Send "{Blind}{Tab DownR}"
         }
         else
@@ -193,10 +169,10 @@
                 return
             }
             else {
-                SetKeyDelay -1 
+                SetKeyDelay -1
                 Send "{Blind}{Tab DownR}"
-                Sleep 10 
-                SetKeyDelay -1 
+                Sleep 10
+                SetKeyDelay -1
                 Send "{Blind}{Tab Up}"
             }
         }
@@ -205,7 +181,10 @@
 ; _____________________________________________________________________________/ }}}1
 ; «RAlt» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-    *$RAlt::return
+    *$RAlt:: {
+        right_KB_half_recently_active := True
+        SetTimer timer_2hAlarm, alarm_2h_time_window
+    }
 
 ; _____________________________________________________________________________/ }}}1
 ; «`~» (Home layer) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
@@ -222,37 +201,42 @@
             return
         }
         else {
-            SetKeyDelay -1 
+            SetKeyDelay -1
             Send "{Blind}{SC029 DownR}"
-            Sleep 10 
-            SetKeyDelay -1 
+            Sleep 10
+            SetKeyDelay -1
             Send "{Blind}{SC029 up}"
         }
     }
 
 ; _____________________________________________________________________________/ }}}1
 
-; [F] remap_down, [F] remap_up, [T] timer_2hAlarm ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; =================== NEW: ============================================
 
-    ; String -> ...
-    remap_down(toKey) 
-    {
-        SetKeyDelay -1
-        Send "{Blind}{" toKey " DownR}"
-    }
+; [F] get_cur_layer ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-    ; String -> Bool -> ...
-    remap_up(keyToUnpress, activate_alarm)
+    get_cur_layer()
     {
-    global
-        If (activate_alarm) {
-            right_KB_half_recently_active := True
-            SetTimer timer_2hAlarm, alarm_2h_time_window
-            gui_2hAlarmR.Value := 100
+    global gui_cur_layer
+        space := GetKeyState("Space", "P") ? "Space_" : ""
+        ralt  := GetKeyState("RAlt" , "P") ? "RAlt_"  : ""
+        tab   := GetKeyState("Tab"  , "P") ? "Tab_"   : ""
+        layers_mask := space . ralt . tab
+        ;
+        Switch layers_mask {
+            case "":            layer := KB_Layers.Home
+            case "Space_":      layer := (right_KB_half_recently_active) ? KB_Layers.Home : KB_Layers.Text2
+            case "Space_Tab_":  layer := (right_KB_half_recently_active) ? KB_Layers.Home : KB_Layers.Text2withAlt
+            case "Tab_":        layer := (right_KB_half_recently_active) ? KB_Layers.Home : KB_Layers.Navi
+            case "RAlt_":       layer := KB_Layers.Navi
+            default:            layer := KB_Layers.Error
         }
-        SetKeyDelay -1
-        Send "{Blind}{" keyToUnpress " Up}"
+        gui_cur_layer.Value := layer
+        return layer
     }
+
+; _____________________________________________________________________________/ }}}1
+; [F] send_DownR, [F] send_Up, [T] timer_2hAlarm ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     timer_2hAlarm()
     {
@@ -261,357 +245,63 @@
         gui_2hAlarmR.Value := 0
     }
 
-; _____________________________________________________________________________/ }}}1
-; [F] remap_withMods_down, [F] remap_withMods_up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    ; String -> ...
-    remap_withMods_down(key)
-    {
-        IS_Shift        := (GetKeyState("k","P")=1 or GetKeyState("1","P")=1) ? "+" : ""
-        IS_Ctrl         := (GetKeyState("l","P")=1 or GetKeyState("2","P")=1) ? "^" : ""
-        IS_Alt          := (GetKeyState(";","P")=1) ? "!" : ""
-        IS_Win          := (GetKeyState("m","P")=1) ? "#" : ""
-        IS_x5           := (GetKeyState("'","P")=1 or GetKeyState("3","P")=1) ?  5  : 1
-        ; 
-        mods_Mask       := IS_Shift . IS_Ctrl . IS_Alt . IS_Win
-        keys_To_Send    := mods_Mask . "{" . key . " DownR}"
-        
+    ; [String, Bool] -> String -> String -> String -> String | ...
+    send_DownR(homeList, keyText2, keyText2Alt, keyNavi, keySmb) {
+    global
+    local keyHome, activate_2hAlarm, cur_layer, key
+        ; variables unpacking: 
+        keyHome := homeList[1]
+        activate_2hAlarm := homelist[2]
         ;
-        Loop IS_x5
-            Send "{Blind}" keys_To_Send
-    }
-
-    ; String -> ...
-    remap_withMods_up(keyToUnpress)
-    {
-        SetKeyDelay -1
-        Send "{Blind}" keyToUnpress " Up}"
-    }
-
-; _____________________________________________________________________________/ }}}1
-; LAYER: Home ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-; ■ down ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
-
-    *$t::remap_down("f")
-    *$f::remap_down("t")
-
-    *$6::remap_down("=")
-    *$7::remap_down("6")
-    *$8::remap_down("7")
-    *$9::remap_down("8")
-    *$0::remap_down("9")
-    *$-::remap_down("0")
-    *$=::remap_down("-")
-
-    *$y::remap_down("\")
-    *$u::remap_down("y")
-    *$i::remap_down("u")
-    *$o::remap_down("i")
-    *$p::remap_down("o")
-    *$[::remap_down("p")
-    *$]::remap_down("SC01A")    ; «[»
-    *$\::remap_down("SC01B")    ; «]»
-
-    *$h::remap_down("SC028")    ; «'»
-    *$j::remap_down("h")
-    *$k::remap_down("n")
-    *$l::remap_down("k")
-   *$`;::remap_down("l")
-    *$'::remap_down("SC027")    ; «;»
-
-    *$n::remap_down("SC035")    ; /
-    *$m::remap_down("j")
-    *$,::remap_down("m")
-    *$.::remap_down("SC033")    ; ,
-    *$/::remap_down("SC034")    ; .
-
-; ________________________________________________________________________/ }}}2
-; ■ up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
-
-    *$t Up::remap_up("f"    , False)
-
-    *$f Up::remap_up("t"    , False)
-
-    *$6 Up::remap_up("="    , False)
-    *$7 Up::remap_up("6"    , True)
-    *$8 Up::remap_up("7"    , True)
-    *$9 Up::remap_up("8"    , True)
-    *$0 Up::remap_up("9"    , True)
-    *$- Up::remap_up("0"    , True)
-    *$= Up::remap_up("-"    , True)
-
-    *$y Up::remap_up("\"    , False)
-    *$u Up::remap_up("y"    , True)
-    *$i Up::remap_up("u"    , True)
-    *$o Up::remap_up("i"    , True)
-    *$p Up::remap_up("o"    , True)
-    *$[ Up::remap_up("p"    , True)
-    *$] Up::remap_up("SC01A", True)     ; «[»
-    *$\ Up::remap_up("SC01B", True)     ; «]»
-
-    *$h Up::remap_up("SC028", False)    ; «'»
-    *$j Up::remap_up("h"    , True)
-    *$k Up::remap_up("n"    , True)
-    *$l Up::remap_up("k"    , True)
-   *$`; Up::remap_up("l"    , True)
-    *$' Up::remap_up("SC027", True)     ; «;»
-
-    *$n Up::remap_up("SC035", False)    ; /
-    *$m Up::remap_up("j"    , True)
-    *$, Up::remap_up("m"    , True)
-    *$. Up::remap_up("SC033", True)     ; ,
-    *$/ Up::remap_up("SC034", True)     ; .
-
-; ________________________________________________________________________/ }}}2
-
-; _____________________________________________________________________________/ }}}1
-; LAYER: Text2 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-#HotIf      GetKeyState("Space","P") = 1
-        and GetKeyState("RAlt" ,"P") = 0
-        and GetKeyState("Tab"  ,"P") = 0
-        and right_KB_half_recently_active = False
-
-; ■ Key «`~» (Text2 Layer) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
- 
-    LShift & SC029::Send ","
-
-    *$SC029:: ; «`~»
-    {
-        Send "{Blind}{LShift DownR}"
-        KeyWait "SC029"
-        Send "{Blind}{LShift up}"
-        if(A_PriorKey != "``" or A_TimeSinceThisHotkey > single_tap_time_gap)
-        {
-            return
-        }
-        else {
-            Send "."
-        }
-    }
-
-; ________________________________________________________________________/ }}}2
-
-        ; FF:
-
-        *$F1::F5
-        *$F2::F6
-        *$F3::F7
-        *$F4::F8
-
-        ; Left side:
-
-        *$1::6
-        *$2::7
-        *$3::8
-        *$4::9
-        *$5::0
-        *$6::-
-        *$7::return
-        *$8::return
-        *$9::return
-        *$0::return
-        *$-::return
-        *$=::return
-
-        *$q::p
-        *$w::o
-        *$e::i
-        *$r::u
-        *$t::y
-        *$y::SC01A  ; «[»
-        *$u::return
-        *$i::return
-        *$o::return
-        *$p::return
-        *$[::return
-        *$]::return
-        *$\::return
-
-        $*a::SC027  ; «;»
-        $*s::l
-        $*d::k
-        $*f::n
-        $*g::h
-        $*h::SC01B  ; «]»
-        $*j::return
-        $*k::return
-        $*l::return
-       $*`;::return
-        $*'::return
-
-        $*z::SC035  ; «/»
-        $*x::SC034  ; «.»
-        $*c::SC033  ; «,»
-        $*v::m
-        $*b::j
-        $*n::return
-        $*m::return
-        $*,::return
-        $*.::return
-        $*/::return
-
-#HotIf
-
-; _____________________________________________________________________________/ }}}1
-; LAYER: Navigation ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-#HotIf  (   GetKeyState("RAlt" ,"P") = 1
-         or GetKeyState("Tab"  ,"P") = 1
-        )
-        and GetKeyState("Space","P") = 0
-
-     *$F1::F9
-     *$F2::F10
-     *$F3::F11
-     *$F4::F12
-       F5::
-        {
-            SetCapsLockState GetKeyState("CapsLock","T") ? "Off" : "On"
-            SoundBeep 220, 100
-        }
-
-      $*`::Return
-      $*1::Return  ; -> MOD Shift
-      $*2::Return  ; -> MOD Ctrl
-      $*3::Return  ; -> MOD x5
-        4::Volume_Down
-        5::Volume_Up
-        6::Media_Play_Pause
-      $*7::Return
-      $*8::Return
-        9::Send "₱"
-       !9::Send "∗"
-        0::Send "§"
-        -::Send "°"
-       +-::Send "◆"
-       ^-::Send "◇"
-        =::Send "—"
-       +=::Send "‾"
-
-      $*q::remap_withMods_down("Del")
-      $*w::remap_withMods_down("Enter")
-      $*e::remap_withMods_down("Up")
-      $*r::remap_withMods_down("BS")
-      $*t::Return
-      $*y::remap_withMods_down("PgUp")
-      $*u::Return
-      $*i::Return
-        o::Send "«"
-        p::Send "»"
-        [::Send "•"
-       +[::Send "✠"
-      $*]::remap_withMods_down("Esc")
-      $*\::Return
-
-      $*a::remap_withMods_down("Home")
-      $*s::remap_withMods_down("Left")
-      $*d::remap_withMods_down("Down")
-      $*f::remap_withMods_down("Right")
-      $*g::remap_withMods_down("End")
-      $*h::remap_withMods_down("PgDn")
-      $*j::Return
-      $*k::Return       ; -> MOD Shift
-      $*l::Return       ; -> MOD Ctrl
-     $*`;::Return       ; -> MOD Alt
-      $*'::Return       ; -> MOD 5
-
-      $*Enter::Send "!{Enter}"
-
-        z::AppsKey
-        x::Send "←"
-       +x::Send "◄"
-        c::Send "↓"
-       +c::Send "▼"
-       ^c::Send "▽"
-       !c::Send "∇"
-        v::Send "→"
-       +v::Send "►"
-        b::Send "↑"
-       +b::Send "▲"
-       ^b::Send "△"
-       !b::Send "∆"
-      $*n::Return
-      $*m::Return       ; -> MOD Win
-      $*,::remap_withMods_down("Space")
-      $*.::remap_withMods_down("Del")
-      *$/::remap_withMods_down("Tab")
-
-      ; Up:
-      $*q Up::remap_withMods_up("Del")
-      $*w Up::remap_withMods_up("Enter")
-      $*e Up::remap_withMods_up("Up")
-      $*r Up::remap_withMods_up("BS")
-      $*y Up::remap_withMods_up("PgUp")
-      $*] Up::remap_withMods_up("Esc")
-      $*a Up::remap_withMods_up("Home")
-      $*s Up::remap_withMods_up("Left")
-      $*d Up::remap_withMods_up("Down")
-      $*f Up::remap_withMods_up("Right")
-      $*g Up::remap_withMods_up("End")
-      $*h Up::remap_withMods_up("PgDn")
-      $*, Up::remap_withMods_up("Space")
-      $*. Up::remap_withMods_up("Del")
-      *$/ Up::remap_withMods_up("Tab")
-      
-
-#HotIf
-
-
-; _____________________________________________________________________________/ }}}1
-
-    ; =================== NEW: ============================================
-
-; Classes ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    KB_Layers := {Error: 0, Home: 1, Text2: 2, Text2withAlt: 3, Navi: 4, Symbols: 5}
-
-; _____________________________________________________________________________/ }}}1
-; [F] get_cur_layer ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    get_cur_layer()
-    {
-        space := GetKeyState("Space", "P") ? "Space_" : ""
-        ralt  := GetKeyState("RAlt" , "P") ? "RAlt_"  : ""
-        tab   := GetKeyState("Tab"  , "P") ? "Tab_"   : ""
-        layers_mask := space . ralt . tab
-        ;
-        Switch layers_mask {
-            case "":            layer := KB_Layers.Home
-            case "Space_":      layer := KB_Layers.Text2
-            case "Space_Tab_":  layer := KB_Layers.Text2withAlt
-            case "Tab_":        layer := KB_Layers.Navi
-            case "RAlt_":       layer := KB_Layers.Navi
-            case "Space_RAlt_": layer := KB_Layers.Symbols
-            default:            layer := KB_Layers.Error
-        }
-        return layer
-    }
-
-; _____________________________________________________________________________/ }}}1
-; [F] send_DownR, send_Up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    ; String -> String -> String -> String -> String -> Bool -> ...
-    send_DownR(keyHome, keyText2, keyText2Alt, keyNavi, keySmb, activate_2hAlarm) {
         cur_layer := get_cur_layer()
+        ; 
+        If (activate_2hAlarm and (cur_layer = KB_Layers.Home)) {
+            right_KB_half_recently_active := True
+            gui_2hAlarmR.Value := 100
+            SetTimer timer_2hAlarm, alarm_2h_time_window
+        }
+        ; get key to analize:
         Switch cur_layer {
             case KB_Layers.Home :           key := keyHome
             case KB_Layers.Text2 :          key := keyText2
             case KB_Layers.Text2withAlt :   key := keyText2Alt
             case KB_Layers.Navi :           key := keyNavi
             case KB_Layers.Symbols :        key := keySmb
-            default :                       key := ""
+            default :                       key := "XXX"
         }
-        Switch key {
-            case "" :       Send "{Blind}" keyHome " DownR}"
-            case "XXX" :    return
-            default :       Send "{Blind}" key " DownR}"
+        ; analize key:
+        if ((key = "XXX") or (key = "MOD") or (key = "")) {
+            return
+        } else if (SubStr(key, 1, 1) = "•") {
+            Send "{" SubStr(key, 2) "}"
+        } else if (SubStr(key, 1, 1) = "✠") {
+            send_DownR_withNaviMods(SubStr(key, 2))
+        } else { ; supposed here key can only be of form "!+{x" 
+            Send "{Blind}" key " DownR}"
         }
     }
 
+    ; String (smth like «!+{Left») -> | ...
+    send_DownR_withNaviMods(key)
+    {
+        IS_Shift        := (GetKeyState("k","P")=1 or GetKeyState("1","P")=1) ? "+" : ""
+        IS_Ctrl         := (GetKeyState("l","P")=1 or GetKeyState("2","P")=1) ? "^" : ""
+        IS_Alt          := (GetKeyState(";","P")=1) ? "!" : ""
+        IS_Win          := (GetKeyState("m","P")=1) ? "#" : ""
+        IS_x5           := (GetKeyState("'","P")=1 or GetKeyState("3","P")=1) ? 5   : 1
+        ; 
+        mods_Mask       := IS_Shift . IS_Ctrl . IS_Alt . IS_Win
+        keys_To_Send    := mods_Mask . key . " DownR}"
+        ;
+        Loop IS_x5
+            Send "{Blind}" keys_To_Send 
+            
+    }
+
+    ; String -> String -> String -> String -> String -> | ...
     send_Up(keyHome, keyText2, keyText2Alt, keyNavi, keySmb) {
         cur_layer := get_cur_layer()
+        ; get key to analize:
         Switch cur_layer {
             case KB_Layers.Home :           key := keyHome
             case KB_Layers.Text2 :          key := keyText2
@@ -620,6 +310,7 @@
             case KB_Layers.Symbols :        key := keySmb
             default:                        key := ""
         }
+        ; analize key:
         if (key = "") {
             return
         } else {
@@ -629,78 +320,144 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-#HotIf False
+; Hotkeys: DownR ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-    ; keys start from «{» to allow for sending modifiers like for example: «!{1 DownR}»
-    PgUp::send_DownR("!{1", "{2", "{3", "{4", "{5", True)
-    PgUp up::send_Up("{1", "{2", "{3", "{4", "{5")
+    ; Down:                                             User-ensured Up:
+    ;
+    ; - "!+^{x" : Send "{Blind}!+^{x DownR}"        | "{x"  : Send "{x Up}"
+    ; - "{x"    : Send "{Blind}{x DownR}"           | "{x"  
+    ;
+    ; - "•x"    : Send "{x}"                        | "     : sends nothing     // Sps usage for Symbols on any layer
+    ; - "✠!+{x" : Send "{Blind}<nv.md>!+{x DownR}"  | "{x"                      // Sps usage only for Navi-layer
+    ; 
+    ; - ""      : send nothing                      | ""                        // those 3 are different only for convenience
+    ; - "XXX"   : send nothing                      | ""
+    ; - "MOD"   : send nothing                      | ""
+
+                    ;(==["{Home====,======]=,"{Text2====,"{Text2A===,"{Navi=====,"{SymbolsL=)
+                    ;   ►···►···►···►···►···►···►···►···►···►···►···►···►···►···►···►···►···►
+  $*Enter::send_DownR(  ["{Enter"  , True ] ,"XXX"      ,"XXX"      ,"✠!{Enter" ,"XXX"      )
+                    ;   [----------, -----] , --------- , --------- , --------- , ---------
+     *$F1::send_DownR(  ["{F1"     , False] ,"{F5"      ,"!{F1"     ,"✠{F9"     ,""         )
+     *$F2::send_DownR(  ["{F2"     , False] ,"{F6"      ,"!{F2"     ,"✠{F10"    ,""         )
+     *$F3::send_DownR(  ["{F3"     , False] ,"{F7"      ,"!{F3"     ,"✠{F11"    ,""         )
+     *$F4::send_DownR(  ["{F4"     , False] ,"{F8"      ,"!{F4"     ,"✠{F12"    ,""         )
+                    ;   [----------, -----] , --------- , --------- , --------- , ---------
+      $*1::send_DownR(  ["{1"      , False] ,"{6"       ,"!{6"      ,"XXX"      ,""         )
+      $*2::send_DownR(  ["{2"      , False] ,"{7"       ,"!{7"      ,"MOD"      ,""         )
+      $*3::send_DownR(  ["{3"      , False] ,"{8"       ,"!{8"      ,"MOD"      ,""         )
+      $*4::send_DownR(  ["{4"      , False] ,"{9"       ,"!{9"      ,"•Volume_Down"     ,"" )
+      $*5::send_DownR(  ["{5"      , False] ,"{0"       ,"!{0"      ,"•Volume_Up"       ,"" )
+      $*6::send_DownR(  ["{="      , False] ,"{-"       ,"!{-"      ,"•Media_Play_Pause","" )
+      $*7::send_DownR(  ["{6"      , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
+      $*8::send_DownR(  ["{7"      , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
+      $*9::send_DownR(  ["{8"      , True ] ,"XXX"      ,"XXX"      ,"•₱"       ,""         )
+      $*0::send_DownR(  ["{9"      , True ] ,"XXX"      ,"XXX"      ,"•§"       ,""         )
+      $*-::send_DownR(  ["{0"      , True ] ,"XXX"      ,"XXX"      ,"•°"       ,""         )
+      $*=::send_DownR(  ["{-"      , True ] ,"XXX"      ,"XXX"      ,"•—"       ,""         )
+                    ;   [----------, -----] , --------- , --------- , --------- , ---------
+      $*q::send_DownR(  ["{q"      , False] ,"{p"       ,"!{p"      ,"✠{Del"    ,""         )
+      $*w::send_DownR(  ["{w"      , False] ,"{o"       ,"!{o"      ,"✠{Enter"  ,""         )
+      $*e::send_DownR(  ["{e"      , False] ,"{i"       ,"!{i"      ,"✠{Up"     ,""         )
+      $*r::send_DownR(  ["{r"      , False] ,"{u"       ,"!{u"      ,"✠{BS"     ,""         )
+      $*t::send_DownR(  ["{f"      , False] ,"{y"       ,"!{y"      ,"XXX"      ,""         )
+      $*y::send_DownR(  ["{\"      , False] ,"{SC01A"   ,"!{SC01A"  ,"✠{PgUp"   ,""         )
+      $*u::send_DownR(  ["{y"      , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
+      $*i::send_DownR(  ["{u"      , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
+      $*o::send_DownR(  ["{i"      , True ] ,"XXX"      ,"XXX"      ,"•«"       ,""         )
+      $*p::send_DownR(  ["{o"      , True ] ,"XXX"      ,"XXX"      ,"•»"       ,""         )
+      $*[::send_DownR(  ["{p"      , True ] ,"XXX"      ,"XXX"      ,"••"       ,""         )
+      $*]::send_DownR(  ["{SC01A"  , True ] ,"XXX"      ,"XXX"      ,"✠{Esc"    ,""         )
+      $*\::send_DownR(  ["{SC01B"  , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
+                    ;   [----------, -----] , --------- , --------- , --------- , ---------
+      $*a::send_DownR(  ["{a"      , False] ,"{SC027"   ,"!{SC027"  ,"✠{Home"   ,""         )
+      $*s::send_DownR(  ["{s"      , False] ,"{l"       ,"!{l"      ,"✠{Left"   ,""         )
+      $*d::send_DownR(  ["{d"      , False] ,"{k"       ,"!{k"      ,"✠{Down"   ,""         )
+      $*f::send_DownR(  ["{t"      , False] ,"{n"       ,"!{n"      ,"✠{Right"  ,""         )
+      $*g::send_DownR(  ["{g"      , False] ,"{h"       ,"!{h"      ,"✠{End"    ,""         )
+      $*h::send_DownR(  ["{SC028"  , False] ,"{SC01B"   ,"!{SC01B"  ,"✠{PgDn"   ,""         )
+      $*j::send_DownR(  ["{h"      , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
+      $*k::send_DownR(  ["{n"      , True ] ,"XXX"      ,"XXX"      ,"MOD"      ,""         )
+      $*l::send_DownR(  ["{k"      , True ] ,"XXX"      ,"XXX"      ,"MOD"      ,""         )
+     $*`;::send_DownR(  ["{l"      , True ] ,"XXX"      ,"XXX"      ,"MOD"      ,""         )
+      $*'::send_DownR(  ["{SC027"  , True ] ,"XXX"      ,"XXX"      ,"MOD"      ,""         )
+                    ;   [----------, -----] , --------- , --------- , --------- , ---------
+      $*z::send_DownR(  ["{z"      , False] ,"{SC035"   ,"!{SC035"  ,"•AppsKey" ,""         )
+      $*x::send_DownR(  ["{x"      , False] ,"{SC034"   ,"!{SC034"  ,"•←"       ,""         )
+      $*c::send_DownR(  ["{c"      , False] ,"{SC033"   ,"!{SC033"  ,"•↓"       ,""         )
+      $*v::send_DownR(  ["{v"      , False] ,"{m"       ,"!{m"      ,"•→"       ,""         )
+      $*b::send_DownR(  ["{b"      , False] ,"{j"       ,"!{j"      ,"•↑"       ,""         )
+      $*n::send_DownR(  ["{SC035"  , False] ,""         ,""         ,"XXX"      ,""         )
+      $*m::send_DownR(  ["{j"      , True ] ,""         ,""         ,"XXX"      ,""         )
+      $*,::send_DownR(  ["{m"      , True ] ,""         ,""         ,"✠{Space"  ,""         )
+      $*.::send_DownR(  ["{SC033"  , True ] ,""         ,""         ,"✠{Del"    ,""         )
+      $*/::send_DownR(  ["{SC034"  , True ] ,""         ,""         ,"✠{Tab"    ,""         )
+
+; _____________________________________________________________________________/ }}}1
+; Hotkeys: Up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     ; Options:
     ; - "{x"        send as is
-    ; - "!+^{x"     send with extra mods
-    ; - "XX/"       Silenced
-    ; - ""          same as at Home
+    ; - ""          sends nothing
 
-                     ;==,"{Home=====,"{Text2====,"{Text2A===,"{Navi=====,"{SymbolsL==
-  $*Enter::send_DownR(   "{Enter"   ,""         ,"{Enter"   ,"!{Enter"  ,"{Enter"   )
+                    ;(==["{Home=====,"{Text2====,"{Text2A===,"{Navi=====,"{SymbolsL=)
+                    ;   ►···►···►···►···►···►···►···►···►···►···►···►···►···►···►···►
+  $*Enter up::send_Up(   "{Enter"   ,""         ,"{Enter"   ,"{Enter"   ,""         )
+                    ;    ---------- , --------- , --------- , --------- , ---------
+     *$F1 up::send_Up(   "{F1"      ,"{F1"      ,"{F9"      ,"{F9"      ,""         )
+     *$F2 up::send_Up(   "{F2"      ,"{F2"      ,"{F10"     ,"{F10"     ,""         )
+     *$F3 up::send_Up(   "{F3"      ,"{F3"      ,"{F11"     ,"{F11"     ,""         )
+     *$F4 up::send_Up(   "{F4"      ,"{F4"      ,"{F12"     ,"{F12"     ,""         )
+                    ;    ---------- , --------- , --------- , --------- , ---------
+      $*1 up::send_Up(   "{1"       ,"{6"       ,""         ,""         ,""         )
+      $*2 up::send_Up(   "{2"       ,"{7"       ,""         ,""         ,""         )
+      $*3 up::send_Up(   "{3"       ,"{8"       ,""         ,""         ,""         )
+      $*4 up::send_Up(   "{4"       ,"{9"       ,""         ,""         ,""         )
+      $*5 up::send_Up(   "{5"       ,"{0"       ,""         ,""         ,""         )
+      $*6 up::send_Up(   "{="       ,"{-"       ,""         ,""         ,""         )
+      $*7 up::send_Up(   "{6"       ,""         ,""         ,""         ,""         )
+      $*8 up::send_Up(   "{7"       ,""         ,""         ,""         ,""         )
+      $*9 up::send_Up(   "{8"       ,""         ,""         ,""         ,""         )
+      $*0 up::send_Up(   "{9"       ,""         ,""         ,""         ,""         )
+      $*- up::send_Up(   "{0"       ,""         ,""         ,""         ,""         )
+      $*= up::send_Up(   "{-"       ,""         ,""         ,""         ,""         )
+                    ;    ---------- , --------- , --------- , --------- , ---------
+      $*q up::send_Up(   "{q"       ,"{p"       ,""         ,"{Del"     ,""         )
+      $*w up::send_Up(   "{w"       ,"{o"       ,""         ,"{Enter"   ,""         )
+      $*e up::send_Up(   "{e"       ,"{i"       ,""         ,"{Up"      ,""         )
+      $*r up::send_Up(   "{r"       ,"{u"       ,""         ,"{BS"      ,""         )
+      $*t up::send_Up(   "{f"       ,"{y"       ,""         ,""         ,""         )
+      $*y up::send_Up(   "{\"       ,"{SC01A"   ,""         ,"{PgUp"    ,""         )
+      $*u up::send_Up(   "{y"       ,""         ,""         ,""         ,""         )
+      $*i up::send_Up(   "{u"       ,""         ,""         ,""         ,""         )
+      $*o up::send_Up(   "{i"       ,""         ,""         ,""         ,""         )
+      $*p up::send_Up(   "{o"       ,""         ,""         ,""         ,""         )
+      $*[ up::send_Up(   "{p"       ,""         ,""         ,""         ,""         )
+      $*] up::send_Up(   "{SC01A"   ,""         ,""         ,"{Esc"     ,""         )
+      $*\ up::send_Up(   "{SC01B"   ,""         ,""         ,""         ,""         )
 
-                     ;==,"{Home=====,"{Text2====,"{Text2A===,"{Navi=====,"{SymbolsL==
-     *$F1::send_DownR(   "{F1"      ,"{F5"      ,"!{F1"     ,"{F9"      ,""         )
-     *$F2::send_DownR(   "{F2"      ,"{F6"      ,"!{F2"     ,"{F10"     ,""         )
-     *$F3::send_DownR(   "{F3"      ,"{F7"      ,"!{F3"     ,"{F11"     ,""         )
-     *$F4::send_DownR(   "{F4"      ,"{F8"      ,"!{F4"     ,"{F12"     ,""         )
+      $*a up::send_Up(   "{a"       ,"{SC027"   ,""         ,"{Home"    ,""         )
+      $*s up::send_Up(   "{s"       ,"{l"       ,""         ,"{Left"    ,""         )
+      $*d up::send_Up(   "{d"       ,"{k"       ,""         ,"{Down"    ,""         )
+      $*f up::send_Up(   "{t"       ,"{n"       ,""         ,"{Right"   ,""         )
+      $*g up::send_Up(   "{g"       ,"{h"       ,""         ,"{End"     ,""         )
+      $*h up::send_Up(   "{SC028"   ,"{SC01B"   ,""         ,"{PgDn"    ,""         )
+      $*j up::send_Up(   "{h"       ,""         ,""         ,""         ,""         )
+      $*k up::send_Up(   "{n"       ,""         ,""         ,""         ,""         )
+      $*l up::send_Up(   "{k"       ,""         ,""         ,""         ,""         )
+     $*`; up::send_Up(   "{l"       ,""         ,""         ,""         ,""         )
+      $*' up::send_Up(   "{SC027"   ,""         ,""         ,""         ,""         )
+                    ;    ---------- , --------- , --------- , --------- , ---------
+      $*z up::send_Up(   "{z"       ,"{SC035"   ,""         ,""         ,""         )
+      $*x up::send_Up(   "{x"       ,"{SC034"   ,""         ,""         ,""         )
+      $*c up::send_Up(   "{c"       ,"{SC033"   ,""         ,""         ,""         )
+      $*v up::send_Up(   "{v"       ,"{m"       ,""         ,""         ,""         )
+      $*b up::send_Up(   "{b"       ,"{j"       ,""         ,""         ,""         )
+      $*n up::send_Up(   "{SC035"   ,""         ,""         ,""         ,""         )
+      $*m up::send_Up(   "{j"       ,""         ,""         ,""         ,""         )
+      $*, up::send_Up(   "{m"       ,""         ,""         ,"{Space"   ,""         )
+      $*. up::send_Up(   "{SC033"   ,""         ,""         ,"{Del"     ,""         )
+      $*/ up::send_Up(   "{SC034"   ,""         ,""         ,"{Tab"     ,""         )
 
-      $*1::send_DownR(   "{1"       ,"{6"       ,"!{6"      ,"XXX"      ,""         )
-      $*2::send_DownR(   "{2"       ,"{7"       ,"!{7"      ,"XXX"      ,""         )
-      $*3::send_DownR(   "{3"       ,"{8"       ,"!{8"      ,"XXX"      ,""         )
-      $*4::send_DownR(   "{4"       ,"{9"       ,"!{9"      ,"XXX"      ,""         )
-      $*5::send_DownR(   "{5"       ,"{0"       ,"!{0"      ,"XXX"      ,""         )
-      $*6::send_DownR(   "{="       ,"{-"       ,"!{-"      ,""         ,""         )
-      $*7::send_DownR(   "{6"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*8::send_DownR(   "{7"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*9::send_DownR(   "{8"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*0::send_DownR(   "{9"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*-::send_DownR(   "{0"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*=::send_DownR(   "{-"       ,"XXX"      ,"XXX"      ,""         ,""         )
-                                                            
-      $*q::send_DownR(   "{q"       ,"{p"       ,"!{p"      ,""         ,""         )
-      $*w::send_DownR(   "{w"       ,"{o"       ,"!{o"      ,""         ,""         )
-      $*e::send_DownR(   "{e"       ,"{i"       ,"!{i"      ,""         ,""         )
-      $*r::send_DownR(   "{r"       ,"{u"       ,"!{u"      ,""         ,""         )
-      $*t::send_DownR(   "{f"       ,"{y"       ,"!{y"      ,""         ,""         )
-      $*y::send_DownR(   "{\"       ,"{SC01A"   ,"!{SC01A"  ,""         ,""         )
-      $*u::send_DownR(   "{y"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*i::send_DownR(   "{u"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*o::send_DownR(   "{i"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*p::send_DownR(   "{o"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*[::send_DownR(   "{p"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*]::send_DownR(   "{SC01A"   ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*\::send_DownR(   "{SC01B"   ,"XXX"      ,"XXX"      ,""         ,""         )
-                                                            
-      $*a::send_DownR(   "{a"       ,"{SC027"   ,"!{SC027"  ,""         ,""         )
-      $*s::send_DownR(   "{s"       ,"{l"       ,"!{l"      ,""         ,""         )
-      $*d::send_DownR(   "{d"       ,"{k"       ,"!{k"      ,""         ,""         )
-      $*f::send_DownR(   "{t"       ,"{n"       ,"!{n"      ,""         ,""         )
-      $*g::send_DownR(   "{g"       ,"{h"       ,"!{h"      ,""         ,""         )
-      $*h::send_DownR(   "{SC028"   ,"{SC01B"   ,"!{SC01B"  ,""         ,""         )
-      $*j::send_DownR(   "{h"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*k::send_DownR(   "{n"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*l::send_DownR(   "{k"       ,"XXX"      ,"XXX"      ,""         ,""         )
-     $*`;::send_DownR(   "{l"       ,"XXX"      ,"XXX"      ,""         ,""         )
-      $*'::send_DownR(   "{SC027"   ,"XXX"      ,"XXX"      ,""         ,""         )
-                                                            
-      $*z::send_DownR(   "{z"       ,"{SC035"   ,"!{SC035"  ,""         ,""         )
-      $*x::send_DownR(   "{x"       ,"{SC034"   ,"!{SC034"  ,""         ,""         )
-      $*c::send_DownR(   "{c"       ,"{SC033"   ,"!{SC033"  ,""         ,""         )
-      $*v::send_DownR(   "{v"       ,"{m"       ,"!{m"      ,""         ,""         )
-      $*b::send_DownR(   "{b"       ,"{j"       ,"!{j"      ,""         ,""         )
-      $*n::send_DownR(   "{SC035"   ,""         ,""         ,""         ,""         )
-      $*m::send_DownR(   "{j"       ,""         ,""         ,""         ,""         )
-      $*,::send_DownR(   "{m"       ,""         ,""         ,""         ,""         )
-      $*.::send_DownR(   "{SC033"   ,""         ,""         ,""         ,""         )
-      $*/::send_DownR(   "{SC034"   ,""         ,""         ,""         ,""         )
-
-#HotIf
-
-
+; _____________________________________________________________________________/ }}}1
 

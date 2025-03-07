@@ -7,44 +7,101 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-; App startup ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; === Setup ===
 
-    A_MaxHotkeysPerInterval := 9999
+; App startup (send mods up) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-    ; Sound of App Starting:
     Send "{RAlt Up}{Shift Up}{Ctrl Up}"
-    SoundBeep 440, 100
-    SoundBeep 560, 100
-    SoundBeep 680, 100
 
 ; _____________________________________________________________________________/ }}}1
-; Configs ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; Configs, Variables, Classes ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     ; User setup:
 
         single_tap_time_gap  := 250
         alarm_2h_time_window := -1000
+		show_gui := True
 
     ; Dev setup:
+
+		A_MaxHotkeysPerInterval := 9999
 
         KB_Layers := {Error: 0, Home: 1, Text2: 2, Text2withAlt: 3, Navi: 4, Symbols: 5}
         right_KB_half_recently_active := False
 
+
 ; _____________________________________________________________________________/ }}}1
-; GUI: Declare ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [GUI] Declare ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     gui_main := Gui()
-    gui_main.Opt("+E0x20 -Caption +AlwaysOnTop -MaximizeBox +ToolWindow")
+    gui_main.Opt("+E0x20 -Caption +AlwaysOnTop +LastFound -MaximizeBox +ToolWindow") 
+	WinSetTransparent(120) ; finds GUI due to «LastFound»
 
-    gui_2hAlarmL  := gui_main.AddProgress("w20 h20 cBlue" , 100)
-    gui_2hAlarmR  := gui_main.AddProgress("w20 h20 cRed"  ,   0)
-    gui_cur_layer := gui_main.AddText( , "Bubr")
+	screen_width  := A_ScreenWidth
+	screen_height := A_ScreenHeight
 
-    ; gui_main.Show()
+	; 1h/2h visualization:
+	gui_2h_TextL    := gui_main.AddButton(  "x00 y00 w20 h20"              , "  ")
+    gui_2hAlarmL    := gui_main.AddProgress("x02 y02 w16 h16 cBlue"        ,  100)
+	gui_2h_TextR    := gui_main.AddButton(  "x20 y00 w20 h20"              , "1h")
+    gui_2hAlarmR    := gui_main.AddProgress("x22 y02 w16 h16 cRed Hidden"  ,  100)
+
+	; App status vis:
+	gui_ModeLabel   := gui_main.AddText(    "x04 y25 w30"                  , "OPRIQ")
+
+	if (show_gui) {
+		gui_main.Show("xCenter NoActivate w41 Y" . (screen_height - 75))
+	}
+
+; _____________________________________________________________________________/ }}}1
+; [GUI] Visualization [F] ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	guiF_visualise_1h() {
+		global
+		gui_2hAlarmR.Visible := False
+	}
+
+	guiF_visualise_2h() {
+		global
+		gui_2hAlarmR.Visible := True
+	}
+
+	guiF_visualise_susp() {
+		global
+		gui_ModeLabel.Value := "↓susp↓"
+		gui_2h_TextR.Text := ""
+		gui_2hAlarmL.Visible := False
+	}
+
+	guiF_visualise_unsusp() {
+		global
+		gui_2hAlarmL.Visible := True
+		gui_ModeLabel.Value := "OPRIQ"
+		gui_2h_TextR.Text := "1h"
+	}
+
+; _____________________________________________________________________________/ }}}1
+; [GUI] Utils [F] ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	; currently UNUSED
+	; Integer -> String
+	kb_layer_to_String(n)
+	{
+        Switch n {
+            case 0:   outp := "---"
+            case 1:   outp := "Home"
+            case 2:   outp := "Text2"
+            case 3:   outp := "Text2A"
+            case 4:   outp := "Navi"
+            case 5:   outp := "Symbols"
+            default:  outp := "---"
+		}
+		return outp
+	}
 
 ; _____________________________________________________________________________/ }}}1
 
-; AppControlls, Mouse, «CapsLock» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Hotkeys] AppControlls, Mouse, «CapsLock» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
 #SuspendExempt
 
@@ -64,18 +121,18 @@
         WheelDown::WheelLeft
     #HotIf
 
-    *$#F1::
-    {
+    *$#F1:: {
+		guiF_visualise_susp()
+        Suspend 1
         SoundBeep 580, 100
         SoundBeep 340, 100
-        Suspend 1
     }
 
-    *$#F2::
-    {
+    *$#F2:: {
+		guiF_visualise_unsusp()
+        Suspend 0
         SoundBeep 340, 100
         SoundBeep 580, 100
-        Suspend 0
     }
 
     *$#F3::Reload ; this hotkey will fire Window-key if it is released after F3
@@ -124,7 +181,32 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-; «Space» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; === Double-func keys ===
+
+; [Hotkeys] «`~» (Home layer) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+    LShift & SC029::+SC029
+
+    *$SC029:: ; «`~»
+    {
+        Send "{Blind}{LShift DownR}"
+        KeyWait "SC029"
+        Send "{Blind}{LShift up}"
+        if(A_PriorKey != "``" or A_TimeSinceThisHotkey > single_tap_time_gap)
+        {
+            return
+        }
+        else {
+            SetKeyDelay -1
+            Send "{Blind}{SC029 DownR}"
+            Sleep 10
+            SetKeyDelay -1
+            Send "{Blind}{SC029 up}"
+        }
+    }
+
+; _____________________________________________________________________________/ }}}1
+; [Hotkeys] «Space» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     *$Space::
     {
@@ -152,7 +234,7 @@
     }
 
 ; _____________________________________________________________________________/ }}}1
-; «Tab» (+ AltTab handling) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Hotkeys] «Tab» (+ AltTab handling) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     *$Tab::
     {
@@ -179,39 +261,49 @@
     }
 
 ; _____________________________________________________________________________/ }}}1
-; «RAlt» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Hotkeys] «RAlt» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     *$RAlt:: {
-        right_KB_half_recently_active := True
-        SetTimer timer_2hAlarm, alarm_2h_time_window
+		global
+        register_kb_rightSide_activity()
     }
 
 ; _____________________________________________________________________________/ }}}1
-; «`~» (Home layer) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Hotkeys] «F5» (for Capslock) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-    LShift & SC029::+SC029
-
-    *$SC029:: ; «`~»
-    {
-        Send "{Blind}{LShift DownR}"
-        KeyWait "SC029"
-        Send "{Blind}{LShift up}"
-        if(A_PriorKey != "``" or A_TimeSinceThisHotkey > single_tap_time_gap)
-        {
-            return
-        }
-        else {
-            SetKeyDelay -1
-            Send "{Blind}{SC029 DownR}"
-            Sleep 10
-            SetKeyDelay -1
-            Send "{Blind}{SC029 up}"
-        }
-    }
+	$*F5:: {
+		cur_layer := get_cur_layer()
+		if (cur_layer = KB_Layers.Navi) {
+			SetCapsLockState GetKeyState("CapsLock","T") ? "Off" : "On"
+			SoundBeep 220, 100
+		} else {
+			Send "{Blind}{F5}"
+		}
+	}
 
 ; _____________________________________________________________________________/ }}}1
 
-; =================== NEW: ============================================
+; === Main ===
+
+; Doc on Hotkeys functions ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	;=========================================================================================================================
+    ; [Down]:                                       | User must ensure these args for [Up]:
+    ;
+    ; - "!+^{x" : Send "{Blind}!+^{x DownR}"        | "{x"  : Send "{x Up}"
+    ; - "{x"    : Send "{Blind}{x DownR}"           | "{x"  
+    ;
+    ; - "•x"    : Send "{x}"                        | "     : sends nothing     // Sps usage for Symbols on any layer
+    ; - "✠!+{x" : Send "{Blind}<nv.md>!+{x DownR}"  | "{x"                      // Sps usage only for Navi-layer
+    ; 
+    ; - ""      : send nothing                      | ""                        // those 3 are different only for convenience
+    ; - "XXX"   : send nothing                      | ""
+    ; - "MOD"   : send nothing                      | ""
+	;=========================================================================================================================
+
+	; Keys that are considered as MOD on Navi layer are given in send_DownR(...)
+
+; _____________________________________________________________________________/ }}}1
 
 ; [F] get_cur_layer ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
@@ -231,21 +323,34 @@
             case "RAlt_":       layer := KB_Layers.Navi
             default:            layer := KB_Layers.Error
         }
-        gui_cur_layer.Value := layer
         return layer
     }
 
 ; _____________________________________________________________________________/ }}}1
-; [F] send_DownR, [F] send_Up, [T] timer_2hAlarm ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [T] timer_2hAlarm, [F] (un)register_kb_rightSide_activity ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-    timer_2hAlarm()
-    {
-        global
+	register_kb_rightSide_activity() {
+		global
+		right_KB_half_recently_active := True
+		guiF_visualise_2h()
+		SetTimer timer_2hAlarm, alarm_2h_time_window
+	}
+
+	unregisster_kb_rightSide_activity() {
+		global
         right_KB_half_recently_active := False
-        gui_2hAlarmR.Value := 0
+        guiF_visualise_1h()
+	}
+
+    timer_2hAlarm() {
+		unregisster_kb_rightSide_activity()
     }
 
+; _____________________________________________________________________________/ }}}1
+; [F] send_DownR ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
     ; [String, Bool] -> String -> String -> String -> String | ...
+	; see full docs where Hotkeys are assigned
     send_DownR(homeList, keyText2, keyText2Alt, keyNavi, keySmb) {
     global
     local keyHome, activate_2hAlarm, cur_layer, key
@@ -256,9 +361,7 @@
         cur_layer := get_cur_layer()
         ; 
         If (activate_2hAlarm and (cur_layer = KB_Layers.Home)) {
-            right_KB_half_recently_active := True
-            gui_2hAlarmR.Value := 100
-            SetTimer timer_2hAlarm, alarm_2h_time_window
+			register_kb_rightSide_activity()
         }
         ; get key to analize:
         Switch cur_layer {
@@ -281,6 +384,9 @@
         }
     }
 
+; _____________________________________________________________________________/ }}}1
+; [F] send_DownR_withNaviMods ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
     ; String (smth like «!+{Left») -> | ...
     send_DownR_withNaviMods(key)
     {
@@ -295,8 +401,10 @@
         ;
         Loop IS_x5
             Send "{Blind}" keys_To_Send 
-            
     }
+
+; _____________________________________________________________________________/ }}}1
+; [F] send_Up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     ; String -> String -> String -> String -> String -> | ...
     send_Up(keyHome, keyText2, keyText2Alt, keyNavi, keySmb) {
@@ -320,23 +428,11 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-; Hotkeys: DownR ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    ; Down:                                             User-ensured Up:
-    ;
-    ; - "!+^{x" : Send "{Blind}!+^{x DownR}"        | "{x"  : Send "{x Up}"
-    ; - "{x"    : Send "{Blind}{x DownR}"           | "{x"  
-    ;
-    ; - "•x"    : Send "{x}"                        | "     : sends nothing     // Sps usage for Symbols on any layer
-    ; - "✠!+{x" : Send "{Blind}<nv.md>!+{x DownR}"  | "{x"                      // Sps usage only for Navi-layer
-    ; 
-    ; - ""      : send nothing                      | ""                        // those 3 are different only for convenience
-    ; - "XXX"   : send nothing                      | ""
-    ; - "MOD"   : send nothing                      | ""
+; [Hotkeys] DownR ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
                     ;(==["{Home====,======]=,"{Text2====,"{Text2A===,"{Navi=====,"{SymbolsL=)
                     ;   ►···►···►···►···►···►···►···►···►···►···►···►···►···►···►···►···►···►
-  $*Enter::send_DownR(  ["{Enter"  , True ] ,"XXX"      ,"XXX"      ,"✠!{Enter" ,"XXX"      )
+  $*Enter::send_DownR(  ["{Enter"  , False] ,"XXX"      ,"XXX"      ,"✠!{Enter" ,"XXX"      )
                     ;   [----------, -----] , --------- , --------- , --------- , ---------
      *$F1::send_DownR(  ["{F1"     , False] ,"{F5"      ,"!{F1"     ,"✠{F9"     ,""         )
      *$F2::send_DownR(  ["{F2"     , False] ,"{F6"      ,"!{F2"     ,"✠{F10"    ,""         )
@@ -394,11 +490,7 @@
       $*/::send_DownR(  ["{SC034"  , True ] ,""         ,""         ,"✠{Tab"    ,""         )
 
 ; _____________________________________________________________________________/ }}}1
-; Hotkeys: Up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    ; Options:
-    ; - "{x"        send as is
-    ; - ""          sends nothing
+; [Hotkeys] Up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
                     ;(==["{Home=====,"{Text2====,"{Text2A===,"{Navi=====,"{SymbolsL=)
                     ;   ►···►···►···►···►···►···►···►···►···►···►···►···►···►···►···►
@@ -461,3 +553,15 @@
 
 ; _____________________________________________________________________________/ }}}1
 
+; Beep (on GUI Launch) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	; Beep when app is loaded:
+    SoundBeep 440, 100
+    SoundBeep 560, 100
+    SoundBeep 680, 100
+
+; _____________________________________________________________________________/ }}}1
+
+      ; $*s::register_chordKey_DownR(  ["{s"      , False] ,"{l"       ,"!{l"      ,"✠{Left"   ,""         )
+      ; $*d::register_chordKey_DownR(  ["{d"      , False] ,"{k"       ,"!{k"      ,"✠{Down"   ,""         )
+      ; $*f::register_chordKey_DownR(  ["{t"      , False] ,"{n"       ,"!{n"      ,"✠{Right"  ,""         )

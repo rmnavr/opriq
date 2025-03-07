@@ -18,9 +18,11 @@
 
     ; User setup:
 
+		show_gui             := True
+
         single_tap_time_gap  := 250
         alarm_2h_time_window := -1000
-		show_gui := True
+		chords_time_window   := -25
 
     ; Dev setup:
 
@@ -29,6 +31,12 @@
         KB_Layers := {Error: 0, Home: 1, Text2: 2, Text2withAlt: 3, Navi: 4, Symbols: 5}
         right_KB_half_recently_active := False
 
+		chords_keysPressed := [False, False, False]
+		chords_gatheringPhase := 0
+		; variables below are to provide autorepeat for chords
+		start_sleep := 100 
+		end_sleep   := 30
+		step_sleep  := 10
 
 ; _____________________________________________________________________________/ }}}1
 ; [GUI] Declare ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
@@ -183,7 +191,7 @@
 
 ; === Double-func keys ===
 
-; [Hotkeys] «`~» (Home layer) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Hotkeys] «`~» (uses HotIf to decide if layer = Text2) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     LShift & SC029::+SC029
 
@@ -204,6 +212,26 @@
             Send "{Blind}{SC029 up}"
         }
     }
+
+	#HotIf	(GetKeyState("Space", "P") = 1 and !right_KB_half_recently_active)
+	 
+		LShift & SC029::Send ","
+
+		*$SC029:: ; «`~»
+		{
+			Send "{Blind}{LShift DownR}"
+			KeyWait "SC029"
+			Send "{Blind}{LShift up}"
+			if(A_PriorKey != "``" or A_TimeSinceThisHotkey > single_tap_time_gap)
+			{
+				return
+			}
+			else {
+				Send "."
+			}
+		}
+	#HotIf
+
 
 ; _____________________________________________________________________________/ }}}1
 ; [Hotkeys] «Space» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
@@ -290,7 +318,7 @@
 	;=========================================================================================================================
     ; [Down]:                                       | User must ensure these args for [Up]:
     ;
-    ; - "!+^{x" : Send "{Blind}!+^{x DownR}"        | "{x"  : Send "{x Up}"
+    ; - "!+^{x" : Send "{Blind}!+^{x DownR}"        | "{x"  : Send "{Blind}{x Up}"
     ; - "{x"    : Send "{Blind}{x DownR}"           | "{x"  
     ;
     ; - "•x"    : Send "{x}"                        | "     : sends nothing     // Sps usage for Symbols on any layer
@@ -301,7 +329,11 @@
     ; - "MOD"   : send nothing                      | ""
 	;=========================================================================================================================
 
-	; Keys that are considered as MOD on Navi layer are given in send_DownR(...)
+	; - Keys that are considered as MOD on Navi layer are given in send_DownR(...)
+	; - For up-keys {Blind} is indeed required
+	;   ( without it for example #3 (call program from task bar) unfocuses window called
+	;   , due to sending masking Ctrl-up/Ctrl-down around «Win» or smth like that
+	;   )
 
 ; _____________________________________________________________________________/ }}}1
 
@@ -309,7 +341,7 @@
 
     get_cur_layer()
     {
-    global gui_cur_layer
+    global 
         space := GetKeyState("Space", "P") ? "Space_" : ""
         ralt  := GetKeyState("RAlt" , "P") ? "RAlt_"  : ""
         tab   := GetKeyState("Tab"  , "P") ? "Tab_"   : ""
@@ -428,6 +460,106 @@
 
 ; _____________________________________________________________________________/ }}}1
 
+; [F] register_chordKey_DownR ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	; Integer -> String -> String -> String -> String -> String | ...
+    register_chordKey_DownR(n, keyHome, keyText2, keyText2Alt, keyNavi, keySmb) {
+    global
+        if (right_KB_half_recently_active or (get_cur_layer() != KB_Layers.Home))
+        {
+			send_DownR([keyHome, False], keyText2, keyText2Alt, keyNavi, keySmb)
+        } else {
+            if (chords_gatheringPhase = 0) {
+                SetTimer chords_Timer, chords_time_window
+                chords_gatheringPhase := 1
+            }
+            chords_keysPressed[n] := True
+        }
+        Return
+    }
+
+; _____________________________________________________________________________/ }}}1
+; [T] chords_Timer ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+    chords_Timer() {
+		global
+		local m1, m2, m3, mask, cur_sleep
+		; build mask:
+		(chords_keysPressed[1] = True) ? m1 := "1" : m1 := "0"
+		(chords_keysPressed[2] = True) ? m2 := "1" : m2 := "0"
+		(chords_keysPressed[3] = True) ? m3 := "1" : m3 := "0"
+		mask := m1 . m2 . m3
+        Switch mask
+        {
+            case "100" : Send "{Blind}{s DownR}"
+            case "010" : Send "{Blind}{d DownR}"
+            case "001" : Send "{Blind}{t DownR}"
+            case "011" :
+                cur_sleep := start_sleep
+                while (GetKeyState("d","P") and GetKeyState("f","P")) {
+                    If (cur_sleep > end_sleep) {
+                        cur_sleep := cur_sleep - step_sleep
+					}
+                    Send "{Blind}{Enter DownR}"
+                    Sleep cur_sleep
+                }
+                Send "{Blind}{Enter up}"
+            case "101" :
+                cur_sleep := start_sleep
+                while (GetKeyState("s","P") and GetKeyState("f","P")) {
+                    If (cur_sleep > end_sleep) {
+                        cur_sleep := cur_sleep - step_sleep
+					}
+                    Send "{Blind}{Del DownR}"
+                    Sleep cur_sleep
+                }
+                Send "{Blind}{Del up}"
+            case "110" :
+                cur_sleep := start_sleep
+                while (GetKeyState("d","P") and GetKeyState("s","P")) {
+                    If (cur_sleep > end_sleep) {
+                        cur_sleep := cur_sleep - step_sleep
+					}
+                    Send "{Blind}{BS DownR}"
+                    Sleep cur_sleep
+                }
+                Send "{Blind}{BS up}"
+            case "111" : False
+        }
+        chords_gatheringPhase := 0
+        chords_keysPressed := [False, False, False]
+	}
+
+; _____________________________________________________________________________/ }}}1
+; [F] register_chordKey_Up, [T] chords_Timer_i_up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	; curenntly it essentially does nothing, however it is a core for building tracking system
+
+    ; Integer -> String -> String -> String -> String -> String -> | ...
+    register_chordKey_Up(n, keyHome, keyText2, keyText2Alt, keyNavi, keySmb) {
+		global
+        Switch n {
+            case 1: SetTimer chords_Timer_1_up, chords_time_window
+            case 2: SetTimer chords_Timer_2_up, chords_time_window
+            case 3: SetTimer chords_Timer_3_up, chords_time_window
+        }
+	}
+
+    chords_Timer_1_up() {
+        Send "{Blind}{s up}"
+	}
+
+    chords_Timer_2_up() {
+        Send "{Blind}{d up}"
+    }
+
+    chords_Timer_3_up() {
+        Send "{Blind}{t up}"
+
+	}
+
+; _____________________________________________________________________________/ }}}1
+
 ; [Hotkeys] DownR ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
                     ;(==["{Home====,======]=,"{Text2====,"{Text2A===,"{Navi=====,"{SymbolsL=)
@@ -467,9 +599,9 @@
       $*\::send_DownR(  ["{SC01B"  , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
                     ;   [----------, -----] , --------- , --------- , --------- , ---------
       $*a::send_DownR(  ["{a"      , False] ,"{SC027"   ,"!{SC027"  ,"✠{Home"   ,""         )
-      $*s::send_DownR(  ["{s"      , False] ,"{l"       ,"!{l"      ,"✠{Left"   ,""         )
-      $*d::send_DownR(  ["{d"      , False] ,"{k"       ,"!{k"      ,"✠{Down"   ,""         )
-      $*f::send_DownR(  ["{t"      , False] ,"{n"       ,"!{n"      ,"✠{Right"  ,""         )
+	  ;s
+	  ;d
+	  ;f
       $*g::send_DownR(  ["{g"      , False] ,"{h"       ,"!{h"      ,"✠{End"    ,""         )
       $*h::send_DownR(  ["{SC028"  , False] ,"{SC01B"   ,"!{SC01B"  ,"✠{PgDn"   ,""         )
       $*j::send_DownR(  ["{h"      , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
@@ -529,9 +661,9 @@
       $*\ up::send_Up(   "{SC01B"   ,""         ,""         ,""         ,""         )
 
       $*a up::send_Up(   "{a"       ,"{SC027"   ,""         ,"{Home"    ,""         )
-      $*s up::send_Up(   "{s"       ,"{l"       ,""         ,"{Left"    ,""         )
-      $*d up::send_Up(   "{d"       ,"{k"       ,""         ,"{Down"    ,""         )
-      $*f up::send_Up(   "{t"       ,"{n"       ,""         ,"{Right"   ,""         )
+	  ;s
+	  ;d
+	  ;f
       $*g up::send_Up(   "{g"       ,"{h"       ,""         ,"{End"     ,""         )
       $*h up::send_Up(   "{SC028"   ,"{SC01B"   ,""         ,"{PgDn"    ,""         )
       $*j up::send_Up(   "{h"       ,""         ,""         ,""         ,""         )
@@ -552,6 +684,17 @@
       $*/ up::send_Up(   "{SC034"   ,""         ,""         ,"{Tab"     ,""         )
 
 ; _____________________________________________________________________________/ }}}1
+; [Hotkeys] Chords ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	$*s::register_chordKey_DownR(1	,"{s"	,"{l"       ,"!{l"      ,"✠{Left"   ,""         )
+	$*d::register_chordKey_DownR(2	,"{d"	,"{k"       ,"!{k"      ,"✠{Down"   ,""         )
+	$*f::register_chordKey_DownR(3	,"{t"	,"{n"       ,"!{n"      ,"✠{Right"  ,""         )
+
+	$*s up::register_chordKey_Up(1	,"{s"	,"{l"    ,""	,"{Left"   ,""         )
+	$*d up::register_chordKey_Up(2	,"{d"	,"{k"    ,""	,"{Down"   ,""         )
+	$*f up::register_chordKey_Up(3	,"{t"	,"{n"    ,""	,"{Right"  ,""         )
+
+; _____________________________________________________________________________/ }}}1
 
 ; Beep (on GUI Launch) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
@@ -562,6 +705,3 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-      ; $*s::register_chordKey_DownR(  ["{s"      , False] ,"{l"       ,"!{l"      ,"✠{Left"   ,""         )
-      ; $*d::register_chordKey_DownR(  ["{d"      , False] ,"{k"       ,"!{k"      ,"✠{Down"   ,""         )
-      ; $*f::register_chordKey_DownR(  ["{t"      , False] ,"{n"       ,"!{n"      ,"✠{Right"  ,""         )

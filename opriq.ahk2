@@ -1,44 +1,39 @@
 
-; TODO ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    ; - not enough unpress for Tab
-    ; - not enough unpress for remap_down/up on all layers
-    ; - reloading issues
-
-; _____________________________________________________________________________/ }}}1
-
 ; === Setup ===
-
-; App startup (send mods up) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
+	
+	SendMode "Input"
     Send "{RAlt Up}{Shift Up}{Ctrl Up}"
 
-; _____________________________________________________________________________/ }}}1
-; Configs, Variables, Classes ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; Configs ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     ; User setup:
-
-		show_gui             := True
 
         single_tap_time_gap  := 250
         alarm_2h_time_window := -1000
 		chords_time_window   := -25
 
+		show_gui_on_startup  := True
+
     ; Dev setup:
 
+		; classes:
+        KB_Layers := {Error: 0, Home: 1, Text2: 2, Text2withAlt: 3, Navi: 4, Symbols: 5}
+
+		; system vars:
 		A_MaxHotkeysPerInterval := 9999
 
-        KB_Layers := {Error: 0, Home: 1, Text2: 2, Text2withAlt: 3, Navi: 4, Symbols: 5}
+		; script vars:
+		gui_shown   := False
         right_KB_half_recently_active := False
 
 		chords_keysPressed := [False, False, False]
 		chords_gatheringPhase := 0
-		; variables below are to provide autorepeat for chords
-		start_sleep := 100 
-		end_sleep   := 30
-		step_sleep  := 10
+		chords_start_sleep := 100 
+		chords_end_sleep   := 30
+		chords_step_sleep  := 10
 
 ; _____________________________________________________________________________/ }}}1
+
 ; [GUI] Declare ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     gui_main := Gui()
@@ -57,12 +52,24 @@
 	; App status vis:
 	gui_ModeLabel   := gui_main.AddText(    "x04 y25 w30"                  , "OPRIQ")
 
-	if (show_gui) {
-		gui_main.Show("xCenter NoActivate w41 Y" . (screen_height - 75))
+	; On Startup:
+	if (show_gui_on_startup) {
+		guiF_show_hide()
 	}
 
 ; _____________________________________________________________________________/ }}}1
 ; [GUI] Visualization [F] ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	guiF_show_hide() {
+		global
+		if (gui_shown) {
+			gui_main.Hide()
+			gui_shown := False
+		} else {
+			gui_main.Show("xCenter NoActivate w41 Y" . (screen_height - 75))
+			gui_shown := True
+		}
+	}
 
 	guiF_visualise_1h() {
 		global
@@ -109,48 +116,7 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-; [Hotkeys] AppControlls, Mouse, «CapsLock» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-#SuspendExempt
-
-    *$CapsLock::LCtrl
-
-    *$XButton1::MButton
-    *$XButton2::Return
-
-    #HotIf GetKeyState("XButton2","P")=1
-        MButton::Media_Play_Pause
-        WheelUp::Volume_Up
-        WheelDown::Volume_Down
-    #HotIf
-
-    #HotIf GetKeyState("XButton1","P")=1
-        WheelUp::WheelRight
-        WheelDown::WheelLeft
-    #HotIf
-
-    *$#F1:: {
-		guiF_visualise_susp()
-        Suspend 1
-        SoundBeep 580, 100
-        SoundBeep 340, 100
-    }
-
-    *$#F2:: {
-		guiF_visualise_unsusp()
-        Suspend 0
-        SoundBeep 340, 100
-        SoundBeep 580, 100
-    }
-
-    *$#F3::Reload ; this hotkey will fire Window-key if it is released after F3
-
-    *$#F6::get_pressed_keys_info()
-
-#SuspendExempt False
-
-; _____________________________________________________________________________/ }}}1
-; [F] get_pressed_keys_info ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [F] debug: get_pressed_keys_info ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
 ; ■ names ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
 
@@ -184,8 +150,70 @@
                 logical := logical . " [" . key . "]"
             }
         }
+		(physical = "") ? physical := "-nothing-" : 1 
+		(logical  = "") ? logical  := "-nothing-" : 1 
         MsgBox "Pressed physical:`n" . physical . "`n" . "`nPressed Logical:`n" . logical
     }
+
+; _____________________________________________________________________________/ }}}1
+
+; === Base Hotkeys ===
+
+; [SE Hotkeys] AppControlls (+CapsLock, +LCtrl) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+#SuspendExempt
+
+    *$CapsLock::LCtrl
+    *$LCtrl::Return
+
+	; «&» works with any modifiers pressed
+	LCtrl & 1:: {
+		guiF_visualise_susp()
+        Suspend 1
+        SoundBeep 580, 100
+        SoundBeep 340, 100
+    }
+
+    LCtrl & 2:: {
+		guiF_visualise_unsusp()
+        Suspend 0
+        SoundBeep 340, 100
+        SoundBeep 580, 100
+    }
+
+    LCtrl & SC029::Reload				; [`~]
+    LCtrl & g::guiF_show_hide()			; [G]UI
+    LCtrl & d::get_pressed_keys_info()	; [D]ebug
+
+    LCtrl & ,::Run "desk.cpl"			; [M]onitor
+
+	LCtrl & C:: {							; [C]apsLock
+		SetCapsLockState GetKeyState("CapsLock","T") ? "Off" : "On"
+		SoundBeep 220, 100
+	}
+
+#SuspendExempt False
+
+; _____________________________________________________________________________/ }}}1
+; [SE Hotkeys] Mouse ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+#SuspendExempt
+
+    *$XButton1::MButton
+    *$XButton2::Return
+
+    #HotIf GetKeyState("XButton2","P")=1
+        MButton::Media_Play_Pause
+        WheelUp::Volume_Up
+        WheelDown::Volume_Down
+    #HotIf
+
+    #HotIf GetKeyState("XButton1","P")=1
+        WheelUp::WheelRight
+        WheelDown::WheelLeft
+    #HotIf
+
+#SuspendExempt False
 
 ; _____________________________________________________________________________/ }}}1
 
@@ -297,19 +325,6 @@
     }
 
 ; _____________________________________________________________________________/ }}}1
-; [Hotkeys] «F5» (for Capslock) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-	$*F5:: {
-		cur_layer := get_cur_layer()
-		if (cur_layer = KB_Layers.Navi) {
-			SetCapsLockState GetKeyState("CapsLock","T") ? "Off" : "On"
-			SoundBeep 220, 100
-		} else {
-			Send "{Blind}{F5}"
-		}
-	}
-
-; _____________________________________________________________________________/ }}}1
 
 ; === Main ===
 
@@ -368,14 +383,14 @@
 		SetTimer timer_2hAlarm, alarm_2h_time_window
 	}
 
-	unregisster_kb_rightSide_activity() {
+	unregister_kb_rightSide_activity() {
 		global
         right_KB_half_recently_active := False
         guiF_visualise_1h()
 	}
 
     timer_2hAlarm() {
-		unregisster_kb_rightSide_activity()
+		unregister_kb_rightSide_activity()
     }
 
 ; _____________________________________________________________________________/ }}}1
@@ -495,36 +510,36 @@
             case "010" : Send "{Blind}{d DownR}"
             case "001" : Send "{Blind}{t DownR}"
             case "011" :
-                cur_sleep := start_sleep
+                cur_sleep := chords_start_sleep
                 while (GetKeyState("d","P") and GetKeyState("f","P")) {
-                    If (cur_sleep > end_sleep) {
-                        cur_sleep := cur_sleep - step_sleep
+                    If (cur_sleep > chords_end_sleep) {
+                        cur_sleep := cur_sleep - chords_step_sleep
 					}
                     Send "{Blind}{Enter DownR}"
                     Sleep cur_sleep
                 }
                 Send "{Blind}{Enter up}"
             case "101" :
-                cur_sleep := start_sleep
+                cur_sleep := chords_start_sleep
                 while (GetKeyState("s","P") and GetKeyState("f","P")) {
-                    If (cur_sleep > end_sleep) {
-                        cur_sleep := cur_sleep - step_sleep
+                    If (cur_sleep > chords_end_sleep) {
+                        cur_sleep := cur_sleep - chords_step_sleep
 					}
                     Send "{Blind}{Del DownR}"
                     Sleep cur_sleep
                 }
                 Send "{Blind}{Del up}"
             case "110" :
-                cur_sleep := start_sleep
+                cur_sleep := chords_start_sleep
                 while (GetKeyState("d","P") and GetKeyState("s","P")) {
-                    If (cur_sleep > end_sleep) {
-                        cur_sleep := cur_sleep - step_sleep
+                    If (cur_sleep > chords_end_sleep) {
+                        cur_sleep := cur_sleep - chords_step_sleep
 					}
                     Send "{Blind}{BS DownR}"
                     Sleep cur_sleep
                 }
                 Send "{Blind}{BS up}"
-            case "111" : False
+            case "111" : Send ""
         }
         chords_gatheringPhase := 0
         chords_keysPressed := [False, False, False]

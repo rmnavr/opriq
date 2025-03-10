@@ -1,12 +1,5 @@
 
-	; TODO: - rename send_Up2
-	;		- сейчас левые клавиши насильно отжимают правые...
-	; Вс done: - 
-	;          - 
-	; Issue: проталкивание n->j
-
-
-; === Setup ===
+; === Setup: ===
 
 ; Configs ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
@@ -20,7 +13,9 @@
 
 	; On Startup:
 
+		SendMode "Input"
 		Send "{RAlt Up}{Shift Up}{Ctrl Up}"
+		A_MenuMaskKey := "vk00sc000"
 
     ; Dev setup:
 
@@ -141,7 +136,7 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-; === Global ===
+; === Global: ===
 
 ; [F] debug: get_pressed_keys_info ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
@@ -376,12 +371,12 @@
             return
         } else if (SubStr(key, 1, 1) = "•") {
             SetKeyDelay -1
-            Send "{" SubStr(key, 2) "}"
+            SendEvent "{" SubStr(key, 2) "}"
         } else if (SubStr(key, 1, 1) = "✠") {
             send_DownR_withNaviMods(SubStr(key, 2))
         } else { ; supposed here key can only be of form "!+{x" 
             SetKeyDelay -1
-            Send "{Blind}" key " DownR}"
+            SendEvent "{Blind}" key " DownR}"
         }
     }
 
@@ -395,13 +390,13 @@
         IS_Ctrl         := (GetKeyState("l","P")=1 or GetKeyState("2","P")=1) ? "^" : ""
         IS_Alt          := (GetKeyState(";","P")=1) ? "!" : ""
         IS_Win          := (GetKeyState("m","P")=1) ? "#" : ""
-        IS_x5           := (GetKeyState("'","P")=1 or GetKeyState("3","P")=1) ? 5   : 1
+        IS_x5           := (GetKeyState("SC028","P")=1 or GetKeyState("3","P")=1) ? 5   : 1
         ; 
         mods_Mask       := IS_Shift . IS_Ctrl . IS_Alt . IS_Win
         keys_To_Send    := mods_Mask . key . " DownR}"
         ;
         Loop IS_x5
-            Send "{Blind}" keys_To_Send 
+            SendEvent "{Blind}" keys_To_Send 
     }
 
 ; ________________________________________________________________________/ }}}2
@@ -411,7 +406,7 @@
 	send_Up(listOfKeys) {
 		for key in listOfKeys {
 			if (GetKeyState(key)) {	; here without "P" parameter, yes
-				Send "{Blind}{" key " Up}"
+				SendEvent "{Blind}{" key " Up}"
 			}
 		}
 	}
@@ -449,40 +444,40 @@
 		mask := m1 . m2 . m3
         Switch mask
         {
-            case "100" : Send "{Blind}{s DownR}"
-            case "010" : Send "{Blind}{d DownR}"
-            case "001" : Send "{Blind}{t DownR}"
+            case "100" : SendEvent "{Blind}{s DownR}"
+            case "010" : SendEvent "{Blind}{d DownR}"
+            case "001" : SendEvent "{Blind}{t DownR}"
             case "011" :
                 cur_sleep := chords_start_sleep
                 while (GetKeyState("d","P") and GetKeyState("f","P")) {
                     If (cur_sleep > chords_end_sleep) {
                         cur_sleep := cur_sleep - chords_step_sleep
 					}
-                    Send "{Blind}{Enter DownR}"
+                    SendEvent "{Blind}{Enter DownR}"
                     Sleep cur_sleep
                 }
-                Send "{Blind}{Enter up}"
+                SendEvent "{Blind}{Enter up}"
             case "101" :
                 cur_sleep := chords_start_sleep
                 while (GetKeyState("s","P") and GetKeyState("f","P")) {
                     If (cur_sleep > chords_end_sleep) {
                         cur_sleep := cur_sleep - chords_step_sleep
 					}
-                    Send "{Blind}{Del DownR}"
+                    SendEvent "{Blind}{Del DownR}"
                     Sleep cur_sleep
                 }
-                Send "{Blind}{Del up}"
+                SendEvent "{Blind}{Del up}"
             case "110" :
                 cur_sleep := chords_start_sleep
                 while (GetKeyState("d","P") and GetKeyState("s","P")) {
                     If (cur_sleep > chords_end_sleep) {
                         cur_sleep := cur_sleep - chords_step_sleep
 					}
-                    Send "{Blind}{BS DownR}"
+                    SendEvent "{Blind}{BS DownR}"
                     Sleep cur_sleep
                 }
-                Send "{Blind}{BS up}"
-            case "111" : Send ""
+                SendEvent "{Blind}{BS up}"
+            case "111" : SendEvent ""
         }
         chords_gatheringPhase := 0
         chords_keysPressed := [False, False, False]
@@ -504,17 +499,17 @@
 	}
 
     chords_Timer_1_up() {
-        Send "{Blind}{s up}"
+        SendEvent "{Blind}{s up}"
 		send_Up(["l", "Left"])
 	}
 
     chords_Timer_2_up() {
-        Send "{Blind}{d up}"
+        SendEvent "{Blind}{d up}"
 		send_Up(["k", "Down"])
     }
 
     chords_Timer_3_up() {
-        Send "{Blind}{t up}"
+        SendEvent "{Blind}{t up}"
 		send_Up(["n", "Right"])
 	}
 
@@ -571,7 +566,7 @@
     *$Space:: {
         if (right_KB_half_recently_active) {
             SetKeyDelay -1
-            Send "{Blind}{Space DownR}"
+            SendEvent "{Blind}{Space DownR}"
         }
         else {
             KeyWait "Space"
@@ -581,10 +576,10 @@
             }
             else {
                 SetKeyDelay -1
-                Send "{Blind}{Space DownR}"
+                SendEvent "{Blind}{Space DownR}"
                 Sleep 10
                 SetKeyDelay -1
-                Send "{Blind}{Space up}"
+                SendEvent "{Blind}{Space up}"
             }
         }
     }
@@ -592,7 +587,7 @@
     *$Space up:: {
         if (right_KB_half_recently_active) {
             SetKeyDelay -1
-            Send "{Blind}{Space Up}"
+            SendEvent "{Blind}{Space Up}"
         }
 	}
 
@@ -605,7 +600,7 @@
 		global
         if (GetKeyState("LAlt", "P")=1) {
             SetKeyDelay -1
-            Send "{Blind}{Tab DownR}"
+            SendEvent "{Blind}{Tab DownR}"
 			tab_in_alttab_mode := True
         }
         else {
@@ -616,10 +611,10 @@
             }
             else {
                 SetKeyDelay -1
-                Send "{Blind}{Tab DownR}"
+                SendEvent "{Blind}{Tab DownR}"
                 Sleep 10
                 SetKeyDelay -1
-                Send "{Blind}{Tab Up}"
+                SendEvent "{Blind}{Tab Up}"
             }
         }
     }
@@ -627,7 +622,7 @@
     *$Tab Up:: {
 		global
 		if (tab_in_alttab_mode) {
-			Send "{Blind}{Tab Up}"
+			SendEvent "{Blind}{Tab Up}"
 			tab_in_alttab_mode := False
 		}
 	}
@@ -636,9 +631,14 @@
 ; [Hotkeys] «RAlt» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     *$RAlt:: {
-		global
         register_kb_rightSide_activity()
     }
+
+    *$RAlt up:: {
+		if (GetKeyState("RAlt")=1) {
+			Send "{Blind}{RAlt Up}"
+		}
+	}
 
 ; _____________________________________________________________________________/ }}}1
 ; [Hotkeys] All: DownR ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
@@ -794,14 +794,14 @@
 		
 		;
         Loop IS_x5
-            Send "{Blind}" keys_To_Send
+            SendEvent "{Blind}" keys_To_Send
     }
 
 	; String -> ...
     remap_withMods_up(keyToUnpress)
     {
 		SetKeyDelay -1
-		Send "{Blind}{" keyToUnpress " Up}"
+		SendEvent "{Blind}{" keyToUnpress " Up}"
     }
 
 ; _____________________________________________________________________________/ }}}1
@@ -854,6 +854,7 @@
     $*d::d
 	*$f::t
 	*$h::SC028	; «'»
+	*$g::g	
 	*$j::h
 	*$k::n
 	*$l::k
@@ -887,14 +888,14 @@
         6::Media_Play_Pause
       $*7::Return
       $*8::Return
-        9::Send "₱"
-       !9::Send "∗"
-        0::Send "§"
-        -::Send "°"
-       +-::Send "◆"
-       ^-::Send "◇"
-        =::Send "—"
-       +=::Send "‾"
+        9::SendEvent "₱"
+       !9::SendEvent "∗"
+        0::SendEvent "§"
+        -::SendEvent "°"
+       +-::SendEvent "◆"
+       ^-::SendEvent "◇"
+        =::SendEvent "—"
+       +=::SendEvent "‾"
 
       $*q::remap_withMods_down("Del")
       $*w::remap_withMods_down("Enter")
@@ -904,10 +905,10 @@
       $*y::remap_withMods_down("PgUp")
       $*u::Return
       $*i::Return
-        o::Send "«"
-        p::Send "»"
-        [::Send "•"
-       +[::Send "✠"
+        o::SendEvent "«"
+        p::SendEvent "»"
+        [::SendEvent "•"
+       +[::SendEvent "✠"
       $*]::remap_withMods_down("Esc")
       $*\::Return
 
@@ -923,21 +924,21 @@
      $*`;::Return       ; -> MOD Alt
       $*'::Return       ; -> MOD 5
 
-	  $*Enter::Send "!{Enter}"
+	  $*Enter::SendEvent "!{Enter}"
 
         z::AppsKey
-        x::Send "←"
-       +x::Send "◄"
-        c::Send "↓"
-       +c::Send "▼"
-       ^c::Send "▽"
-       !c::Send "∇"
-        v::Send "→"
-       +v::Send "►"
-        b::Send "↑"
-       +b::Send "▲"
-       ^b::Send "△"
-       !b::Send "∆"
+        x::SendEvent "←"
+       +x::SendEvent "◄"
+        c::SendEvent "↓"
+       +c::SendEvent "▼"
+       ^c::SendEvent "▽"
+       !c::SendEvent "∇"
+        v::SendEvent "→"
+       +v::SendEvent "►"
+        b::SendEvent "↑"
+       +b::SendEvent "▲"
+       ^b::SendEvent "△"
+       !b::SendEvent "∆"
       $*n::Return
       $*m::Return       ; -> MOD Win
       $*,::remap_withMods_down("Space")
@@ -974,4 +975,3 @@
     SoundBeep 680, 100
 
 ; _____________________________________________________________________________/ }}}1
-

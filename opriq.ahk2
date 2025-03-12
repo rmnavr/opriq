@@ -1,5 +1,5 @@
 
-; === Setup: ===
+	; TODO: chording unpressing upd, doc on unpressing func
 
 ; Configs ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
@@ -11,13 +11,11 @@
 
 		show_gui_on_startup  := True
 
-	; On Startup:
+    ; Dev setup:
 
 		SendMode "Input"
 		Send "{RAlt Up}{Shift Up}{Ctrl Up}"
 		A_MenuMaskKey := "vk00sc000"
-
-    ; Dev setup:
 
 		; classes:
         KB_Layers := {Error: 0, Home: 1, Text2: 2, Text2withAlt: 3, Navi: 4, Symbols: 5}
@@ -136,11 +134,13 @@
 
 ; _____________________________________________________________________________/ }}}1
 
-; === Global: ===
+; === Base: ===
 
-; [F] debug: get_pressed_keys_info ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Functions] app-controls related ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-; ■ names ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
+; ■ [F] debug: get_pressed_keys_info ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
+
+; ■ ■ names ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{3
 
     all_keys_names := [
          "F1"   ,"F2"   ,"F3"   ,"F4"   ,"F5"   ,"F6"   ,"F7"   ,"F8"   ,"F9"   ,"F10"  ,"F11"  ,"F12"
@@ -153,7 +153,7 @@
         , "Volume_Down", "Volume_Up", "Media_Play_Pause"
     ]
 
-; ________________________________________________________________________/ }}}2
+; ___________________________________________________________________/ }}}3
 
     get_pressed_keys_info()
     {
@@ -177,8 +177,8 @@
         MsgBox "Pressed physical (real key):`n" . physical . "`n" . "`nPressed Logical (what OPRIQ generates):`n" . logical
     }
 
-; _____________________________________________________________________________/ }}}1
-; [F] activate/deactivate 2h-only mode ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; ________________________________________________________________________/ }}}2
+; ■ [F] activate/deactivate 2h-only mode ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
 
 	activate_2hOnly_mode() {
 		global
@@ -192,14 +192,43 @@
 		mode_const_2h := False
 	}
 
+; ________________________________________________________________________/ }}}2
+
 ; _____________________________________________________________________________/ }}}1
 
-; [Hotkeys] [AntiSusp] AppControlls (+CapsLock, +LCtrl) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
 #SuspendExempt
+; [Hotkeys] «CapsLock», «LCtrl» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     *$CapsLock::LCtrl
     *$LCtrl::Return
+
+; _____________________________________________________________________________/ }}}1
+; [Hotkeys] Mouse ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+    *$XButton1::MButton
+    *$XButton2::Return
+
+    #HotIf GetKeyState("XButton2","P")=1
+        MButton::SendEvent "{Media_Play_Pause}"
+        WheelUp::SendEvent "{Volume_Up}"
+        WheelDown::SendEvent "{Volume_Down}"
+    #HotIf
+
+    #HotIf GetKeyState("XButton1","P")=1
+        WheelUp::WheelRight
+        WheelDown::WheelLeft
+    #HotIf
+
+; _____________________________________________________________________________/ }}}1
+; [Hotkeys] NumPad ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+       $*NumLock::SendEvent "{Blind}{Space}"
+     $*NumpadDiv::SendEvent "{Blind}+{8}"
+    $*NumpadMult::SendEvent "{Blind}+{0}"
+     $*NumpadSub::SendEvent "{Blind}{=}"
+
+; _____________________________________________________________________________/ }}}1
+; [Hotkeys] AppControls: Core ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
 	; «&» works with any modifiers pressed
 	LCtrl & s:: {
@@ -229,12 +258,15 @@
 		SoundBeep 220, 100
 	}
 
-    LCtrl & ,::Run "desk.cpl"			; [M]onitor
-
-#SuspendExempt False
 
 ; _____________________________________________________________________________/ }}}1
-; [Hotkeys] AppControlls (no Anti-Susp) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Hotkeys] AppControls: Situational 1 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+    LCtrl & ,::Run "desk.cpl"			; [M]onitor
+
+; _____________________________________________________________________________/ }}}1
+#SuspendExempt False
+; [Hotkeys] AppControls: Situational 2 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     LCtrl & 1:: {
 		activate_1L2h_mode()	
@@ -249,31 +281,10 @@
 	}
 
 ; _____________________________________________________________________________/ }}}1
-; [Hotkeys] [AntiSusp] Mouse ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-#SuspendExempt
-
-    *$XButton1::MButton
-    *$XButton2::Return
-
-    #HotIf GetKeyState("XButton2","P")=1
-        MButton::Media_Play_Pause
-        WheelUp::Volume_Up
-        WheelDown::Volume_Down
-    #HotIf
-
-    #HotIf GetKeyState("XButton1","P")=1
-        WheelUp::WheelRight
-        WheelDown::WheelLeft
-    #HotIf
-
-#SuspendExempt False
-
-; _____________________________________________________________________________/ }}}1
 
 ; === 1L/2h-mode: ===
 
-; [Functions/Timers] ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Functions/Timers] 1L2h-mode related ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
 ; ■ Doc on Hotkeys functions ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
 
@@ -486,8 +497,6 @@
 ; ________________________________________________________________________/ }}}2
 ; ■ [F] register_chordKey_Up, [T] chords_Timer_i_up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{2
 
-	; curenntly it essentially does nothing, however it is a core for building tracking system
-
     ; Integer -> String -> String -> String -> String -> String -> | ...
     register_chordKey_Up(n, keyHome, keyText2, keyText2Alt, keyNavi, keySmb) {
 		global
@@ -518,7 +527,7 @@
 ; _____________________________________________________________________________/ }}}1
 
 #HotIf (mode_const_2h = False)
-; [Hotkeys] «`~» (uses HotIf to decide if layer = Text2) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Hotkeys] «`~» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     LShift & SC029::+SC029
 
@@ -706,12 +715,12 @@
 ; [Hotkeys] All: Up ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
   $*Enter up::send_Up(["Enter"])
-                    ;
+	  ;
      *$F1 up::send_Up(["F1", "F5",  "F9"])
      *$F2 up::send_Up(["F2", "F6", "F10"])
      *$F3 up::send_Up(["F3", "F7", "F11"])
      *$F4 up::send_Up(["F4", "F8", "F12"])
-                    ;
+	  ;
       $*1 up::send_Up(["1", "6"])
       $*2 up::send_Up(["2", "7"])
       $*3 up::send_Up(["3", "8"])
@@ -724,7 +733,7 @@
       $*0 up::send_Up(["9"])
       $*- up::send_Up(["0"])
       $*= up::send_Up(["-"])
-                    ;  
+	  ;
       $*q up::send_Up(["q", "p", "Del"])
       $*w up::send_Up(["w", "o", "Enter"])
       $*e up::send_Up(["e", "i", "Up"])
@@ -738,7 +747,7 @@
       $*[ up::send_Up(["p"])
       $*] up::send_Up(["SC01A", "Esc"])
       $*\ up::send_Up(["SC01B"])
-
+	  ;
       $*a up::send_Up(["a", "SC027", "Home"])
 	  ;s
 	  ;d
@@ -750,7 +759,7 @@
       $*l up::send_Up(["k"    ])
      $*`; up::send_Up(["l"    ])
       $*' up::send_Up(["SC027"])
-                    ;
+	  ;
       $*z up::send_Up(["z"       ,"SC035"   ])
       $*x up::send_Up(["x"       ,"SC034"   ])
       $*c up::send_Up(["c"       ,"SC033"   ])

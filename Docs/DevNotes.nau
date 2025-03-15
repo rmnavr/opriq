@@ -1,0 +1,156 @@
+
+// AltGr-problem solution for AHK2 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	// Sendmode Input is default for AHK2
+	// Sendmode Event is default for AHK1
+
+	AltGr Issue description:
+
+		AHK1:	Sometimes RAlt is sent as «LCtrl+RAlt», and it overwhadows initial RAlt, so it never gets unpressed
+				This issue occurs when KeyWait is used (maybe in some other cases)
+
+				Solution for AHK1:
+				Register change [RAlt → F14] works PERFECTLY
+
+		AHK2:	Issue still occurs, but looks like it occurs MUCH LESS FREQUENTLY
+
+				Alternative:
+				remap RAlt to «Send RAlt up» may work, since «RAlt up» does not trigger anything really (but requires testing in various apps/games)
+
+		Sendmode Input AHK2 has low RAlt-issue:
+		± less frequent
+		± Alt can unpress itself
+
+		Sendmode Event AHK1 has high RAlt-issue:
+		✗ very frequent
+		✗ cannot unpress itself
+
+	«tf» issue (somewhat related to AltGr-issue):
+
+		When many keys are frequently pressed, instead of desired «t» keyboard send it's original «f» key
+		It concerns EVERY key, not just «tf» (it is just a random name I selected).
+		It persists not only in OPRIQ but in the simpliest scripts like $*a::1, $*s::1, $*d::1, ... if all of the keys are pressed frequently enough
+		// • «a::1» vs «SCxxx:1» does not solve this issue
+		// • MaxThreads(PerHotkey) does not solve this issue
+
+		SendMode "Input" AHK2/AHK1 has high «tf» issue:
+		✗ «tf» issue: noticeably frequent
+
+		SendMode "Event" AHK2/AHK1 has non-existent «tf» issue:
+		✓ «tf» issue: never occurs
+
+	Final solution in AHK2 of all of the issues:
+
+		• SendMode "Input" (as in default)													// this is to prevent AltGr issue
+		• A_MenuMaskKey := "vk00sc000"														// this is to prevent AltGr issue
+		• using SendEvent everywhere (letters/numbers/symbols, space double-func, chords)	// this is to prevent «tf» issue
+		/ 1L2h:			RAlt::return, RAlt up::Send {Blind}{RAlt up}						// / this is to prevent AltGr issue
+		\ 2hOnlyMode:	RAlt::return is enough for some reason								// \
+
+// ____________________________________________________________________________/ }}}1
+// Theory: Hotkeys unpacking ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+	
+	(using default AHK2 mode SendMode "Input")
+
+	Send "."		-- send lang-angostic, modifiers-unmodifiable symbol «.»; messes with vim-lang-keymap, works great everywhere else
+	Send "SCxxx"	-- «physical» key of keyboard
+	a::b			-- unpacks to: {b DownR} -> (repeat), {b up} (see «Lines most recently executed» for conformation)	// Best
+	Send "b"		-- unpacks to: {b}{b Up} -> (repeat)																// Good, but not ideal for holding in games
+
+	====================================================================
+
+	; https://www.autohotkey.com/docs/v2/misc/Remap.htm
+
+	*a::
+	{
+		SetKeyDelay -1 
+		Send "{Blind}{b DownR}"  ; DownR is like Down except that other Send functions in the script won't assume "b" should stay down during their Send.
+	}
+
+	*a up::
+	{
+		SetKeyDelay -1  
+		Send "{Blind}{b Up}"
+	}
+
+	; also there some exceptions and other big comments to this (see the doc)
+
+// ____________________________________________________________________________/ }}}1
+ 
+// About Key-Tracking system ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	Whole tracking system is indeed required because of process described below (see OPRIQ.v030 architecture based on DownR/Up):
+	1) [hold «w» at Home] -> w_DownR is fired repeatedly
+	2) [hold «Space»] -> layer changed to Text2 (does not matter if it changes via get_cur_layer() as in v028, or via #If as in v030)
+	3) [initial «w» is now «o»] -> o_DonwR is fired repeatedly
+	4) There now no one good option:
+	   - Unpressing key «w» on Text2 layer will fire «o_Up», but «w_Up» will not be fired
+	   - Unpressing key «w» on Home layer fill fire «w_Up», but «o_Up» will not be fired
+	
+	But actually only Bespoke cares about it...
+	OK, may be also some other games
+
+// ____________________________________________________________________________/ }}}1
+// App architecture selection ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	Architecture on get_cur_layer():
+	+ all keys are layered out (full KB remappings are easier to see), more concise code
+	+ supposedely bigger calculation is required for each key press (is it true? is it a problem? can it lag?)
+	- agressively remaps all keys on all layers, hard to remap smth outside of main functions
+
+	Architecture on #If(v1)/#HotIf(v2) pragmas:
+	- code is scattered to many many lines, full KB remapping is less clear
+	- code sometimes should be organized in forced order (one #If should be for some reason later than some another #If)
+	+ code is more clear for individual keys, easier to add individual hotkeys non-standart functionality
+
+// ____________________________________________________________________________/ }}}1
+// Code version comments ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+	v040:
+
+		|  Tracking:	 from OPRIQ.v030 (full system)		// In this version it was made clear that it is indeed required
+		|  Architecture: from OPRIQ.v028 (calc_cur_layer)	// Because code is much more nicer this way
+
+		Updates:
+
+		• architecture rewritten 
+		• moved to AHK2
+			- makes AltGr issue much more less frequent 
+			  - removed LCtrl/PrintScreen/F14 keys from registry
+			  - added unpress Alt on reload to further lessen AltGr issue
+			- bonus: YT Navi-arrows now work
+		• GUI for showing current mode (OPRIQ/susp/1h/2h)
+		+ suspend-protected keys
+			- no more Win-F1 unwantedly opening Explorer
+			- no more Win-Fi firing unwanted Win-key
+			- [Capslock -> LCtrl] works even if suspended, hurray
+			- [Mouse hk] work even if suspended, hurray
+		+ double func of [`~] is more robust now
+		+ Alt+Tab is now quick (drawback: Alt+Arrow now requires strictly pressing Tab before Alt)
+
+		* added mouse media controls (for Verti-Mouse)
+
+	v030:
+
+		| Tracking:		I used tracking system exactly for reasons described in «About Key-Tracking system» cell
+		| Architecture:	Architecture was based on #If pragmas for layers distinguishing
+
+	v028 and earlier:
+
+		| Tracking:		I used «Send, w» method everywhere, which unpacks to repeated bundles of {w}{w Up}
+		|				It auto-solves key-tracking issue (making key-tracking system not needed), but works bad in games (regarding holding keys)
+        |
+		| Architecture:	Architecture was based on «calc_cur_layer()», and the only #If pragma was for mouse layer
+
+// ____________________________________________________________________________/ }}}1
+	
+	Software to check KB robustness:
+	- Bespoke (good for testing tracking-system)
+	- Shapez2 (I actually played perfectly in it with v031)
+	- ANSA (Alt-menus)
+	- Midinous
+	- Noita
+
+
+	SendMode "Input"
+	A_MenuMaskKey := "vk00sc000"

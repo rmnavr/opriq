@@ -5,16 +5,19 @@
 
 ![2 main layers of OPRIQ layout](https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true)
 
+[![OPRIQ 1-handed coding](https://github.com/rmnavr/opriq/blob/main/Docs/1h_coding.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_coding.mp4)
+
 ---
 
 OPRIQ is keyboard layout with following capabilities:
-* **FULL left-handed typing support** via **layers**, **double-function keys** and minimum number of **chords**:
-  > Any combination of keys is possible to press with one hand, including:
-  > enter/BS, numbers, arrows, F1..F12, etc. plus any combination of Alt/Ctrl/Shift/Win.
-  > OK, some tricky hotkeys (like `Win+Alt+Space+5` which sends `Win+Alt+0`) require quite a finger stretching,
+* Killer-feature of OPRIQ is **FULL left-handed typing support** via **layers**, **double-function keys** and minimum number of **chords**.
+  You can even write code just with one hand (with all the naughty symbols like `{`, `$`, `=` and such)
+  > **FULL** left-handed typing support means that **ANY combination of keys is possible to press with one hand**, including:
+  > `Enter`, numbers, arrows, F1..F12, etc. plus any combination of Alt/Ctrl/Shift/Win.
+  > OK, some tricky hotkeys (like `Win+Alt+Space+5` which sends `Win+Alt+0`) require quite a finger stretch,
   > although can't imagine workflow where such hotkeys are used intensively.
-* **Two-handed typing as usual** meaning left-handed typing does not criple usual two-handed typing
-  > OPRIQ also has dedicated 2-handed mode, in which 1-handed features that might interfere with speed typing (layers and chords) are turned off.
+* **Left-handed typing does not criple usual two-handed typing**, which is achieved via short **2-handed-timer**
+  > OPRIQ also has dedicated 2-handed mode, in which 1-handed features that might interfere with speed typing (layers and chords) are completely turned off.
   > I actually only use it in gaming though.
 * **Does not require any additional non-standard hardware** (just a normal ANSI/ISO-keyboard is needed)
 * **Introduces only minor changes to QWERTY layout** (relearning should be a breeze)
@@ -22,7 +25,7 @@ OPRIQ is keyboard layout with following capabilities:
 Requirements:
 * Standard ANSI/ISO-keyboard 
 * Ideally keyboard that has 6NKRO support (Anti-ghosting)
-  > Without it some tricky key combinations (like Alt+Shift+Space+Q) might not work depending on keyboard,
+  > Without it some tricky key combinations (like `Alt+Shift+Space+Q`) might not work depending on keyboard,
   > still 95% of key combination will work, and remaining 5% will still be pressable with two hands as usual
 * OPRIQ works on [AutoHotKey v2.0](https://www.autohotkey.com/), so **only Windows is supported** (for now?)
 

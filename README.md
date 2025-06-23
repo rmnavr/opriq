@@ -5,8 +5,12 @@
 
 ![2 main layers of OPRIQ layout](https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true)
 
-OPRIQ is keyboard layout with possibility of solo-left-handed-typing of any possible keys combinations. You can even code with only left hand.
-Normal 2-handed-typing works too (and it does NOT require tedious mode-switch).
+OPRIQ is keyboard layout with possibility of solo-left-handed-typing of any possible keys combinations.
+You can even code with only left hand (see demo below).
+Normal 2-handed-typing works with all the bells-and-whistles (like navigation layer) too.
+And it does NOT require tedious mode-switch.
+
+OPRIQ was designed mainly for usage in hotkey-heavy software like Photoshop, various CADs and similar.
 
 Table of Contents:
 - [Demonstrations](#Demonstrations)
@@ -22,11 +26,11 @@ Table of Contents:
 
 Standard ANSI-keyboards are used in videos below. I only colored key-caps for better layout visibility.
 
-On the fly switch between left-handed and 2-handed typing:
+*On the fly switch between left-handed and 2-handed typing:*
 
 [![OPRIQ 1h/2h-typing](https://github.com/rmnavr/opriq/blob/main/Docs/2h_switch.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_1h2h.mp4)
 
-1-handed coding with OPRIQ layout (standard:
+*1-handed coding with OPRIQ layout:*
 
 [![OPRIQ 1-handed coding](https://github.com/rmnavr/opriq/blob/main/Docs/1h_coding.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_coding.mp4)
 
@@ -36,29 +40,29 @@ On the fly switch between left-handed and 2-handed typing:
 # Overview
 
 OPRIQ is keyboard layout with following capabilities:
-* Killer-feature of OPRIQ is **FULL left-handed typing support** via **layers**, **double-function keys** and minimum number of **chords**.
-  > "Full left-handed typing support" means that **ANY combination of keys is possible to press with one hand**, including:
+* Killer-feature of OPRIQ is **full left-handed typing support** via **layers**, **double-function keys** and minimum number of **chords**.
+  > "Full left-handed typing support" means that **ANY combination of keys is possible to press with one hand** including:
   > symbols, numbers, arrows, F1..F12, etc. plus any combination of Alt/Ctrl/Shift/Win.
   > OK, some tricky hotkeys (like `Win+Alt+Space+5` which sends `Win+Alt+0`) require quite a finger stretch,
   > although can't imagine workflow where such hotkeys are used intensively.
 * **Left-handed typing does not criple usual two-handed typing**, which is achieved via short **2-handed-timer**
 * **Dedicated 2-handed mode** in which 1-handed features that might interfere with speed typing (layers and chords) are completely turned off.
   Do not confuse it with normal OPRIQ mode, in which 2-handed typing works too (via aforementioned 2-handed-timer).
-  > I only need to use dedicated 2h-mode only in gaming.
-* **Does not require any additional non-standard hardware** (just a normal ANSI/ISO-keyboard is needed)
+  > In my experience, the need to use dedicated 2h-mode arises only in gaming.
+* **Does not require any non-standard keyboard** (just a normal membrane ANSI/ISO-keyboard is enough)
 * **Introduces only minor changes to QWERTY layout** (relearning should be a breeze)
 
 Requirements:
-* Standard ANSI/ISO-keyboard 
-* Ideally keyboard that has 6NKRO support (anti-ghosting), although not obligatory
+* **Standard ANSI/ISO-keyboard **
+* Ideally keyboard that has **6NKRO support** (anti-ghosting), although not obligatory
   > Without 6NKRO some tricky key combinations (like `Alt+Shift+Space+Q`) might not work depending on keyboard,
   > still 95% of key combination will work, and remaining 5% will still be pressable with two hands as usual.
   > 
-  > See 1h-coding demo video — I use cheap membrane keyboard there and experience no problems.
+  > See 1h-coding demo video above — I use cheap membrane keyboard there and experience no problems.
   > Still, this keyboard choked on some other rare (not used in video) key combinations.
-* OPRIQ works on [AutoHotKey v2.0](https://www.autohotkey.com/), so **only Windows is supported** (for now?)
-  > OPRIQ idea can be implemented on QMK, on Linux, Mac, etc. I currently don't plan doing it myself though.
-* OPRIQ requires standard english QWERTY layout to be present in system
+* OPRIQ works on [AutoHotKey v2.0](https://www.autohotkey.com/), so **only Windows is supported** 
+  > OPRIQ idea can be implemented on QMK, on Linux, Mac, etc. I currently don't have plans of doing it myself though.
+* OPRIQ builds from **standard english QWERTY layout** 
 
 My personal OPRIQ story:
 * OPRIQ development took 8 years (2013-2021) with rigorous battle-testing of 5 vastly different layout iterations each built from scratch
@@ -130,16 +134,16 @@ Desktop usage:
   * Sometimes running OPRIQ direclty on remote machine will solve the issue. Sometimes not.
 
 Hardware limitations:
-* On keyboards without 6NKRO some tricky key combinations won't be recognized (in all the membrane keyboards I used it usually were some obscure seldom used hotkeys).
+* On keyboards without 6NKRO some tricky key combinations won't be recognized (in all the membrane keyboards I used it usually were some obscure seldomly used hotkeys).
   You still can enter those keys normally via 2 hands.
 * If you use DVORAK or other non-QWERTY layout, OPRIQ will not work correctly
 
 Not all games support 1h-mode properly:
 * One-shot keys usually work without problems (great for games like Diablo II, Shapez 2, Turing Complete)
-* Letter/number-keys that require holding will produce unwanted result:
+* Letter/number-keys that require holding (anything but Alt/Shift/Ctrl) will produce unwanted result:
   * for example, `Space` (usually working as jump in games) will not have "hold Space for longer jump" capability
   * another example is holding `s+d` (usually working as "move down left" in games) — it might send chord for `BS`, which is usually not what you want
-* Anyway, **dedicated 2h-mode** solves all those issues.
+* Anyway, **dedicated 2h-mode** solves all aformentioned gaming issues
 
 <!-- __________________________________________________________________________/ }}}1 -->
 <!-- Install ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->

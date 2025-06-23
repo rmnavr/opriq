@@ -3,9 +3,11 @@
 
 # OPRIQ (OPtional RIght Qwerty)
 
-![2 main layers of OPRIQ layout](https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true)
-
 [![OPRIQ 1-handed coding](https://github.com/rmnavr/opriq/blob/main/Docs/1h_coding.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_coding.mp4)
+*(1-handed coding with OPRIQ layout)*
+
+![2 main layers of OPRIQ layout](https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true)
+*(2 main layers of OPRIQ layout)*
 
 ---
 

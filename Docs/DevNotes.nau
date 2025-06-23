@@ -130,6 +130,8 @@
 
 		* added mouse media controls (for Verti-Mouse)
 
+	·······························
+
 	v030:
 
 		| Tracking:		I used tracking system exactly for reasons described in «About Key-Tracking system» cell
@@ -150,7 +152,6 @@
 	- ANSA (Alt-menus)
 	- Midinous
 	- Noita
-
 
 	SendMode "Input"
 	A_MenuMaskKey := "vk00sc000"

@@ -13,16 +13,20 @@ Table of Contents:
 - [Overview](#Overview)
 - [Detailed layout description](#Detailed-layout-description)
 - [Configuration and usage](#Configuration-and-usage)
+- [Second language support](#Second-language-support)
 - [Known Issues](#Known-Issues)
+- [Known Limitations](#Known-Limitations)
 - [Installation](#Installation)
 
 # Demonstrations
+
+Standard ANSI-keyboards are used in videos below. I only colored key-caps for better layout visibility.
 
 On the fly switch between left-handed and 2-handed typing:
 
 [![OPRIQ 1h/2h-typing](https://github.com/rmnavr/opriq/blob/main/Docs/2h_switch.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_1h2h.mp4)
 
-1-handed coding with OPRIQ layout:
+1-handed coding with OPRIQ layout (standard:
 
 [![OPRIQ 1-handed coding](https://github.com/rmnavr/opriq/blob/main/Docs/1h_coding.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_coding.mp4)
 
@@ -33,23 +37,28 @@ On the fly switch between left-handed and 2-handed typing:
 
 OPRIQ is keyboard layout with following capabilities:
 * Killer-feature of OPRIQ is **FULL left-handed typing support** via **layers**, **double-function keys** and minimum number of **chords**.
-  > **FULL** left-handed typing support means that **ANY combination of keys is possible to press with one hand**, including:
+  > "Full left-handed typing support" means that **ANY combination of keys is possible to press with one hand**, including:
   > symbols, numbers, arrows, F1..F12, etc. plus any combination of Alt/Ctrl/Shift/Win.
   > OK, some tricky hotkeys (like `Win+Alt+Space+5` which sends `Win+Alt+0`) require quite a finger stretch,
   > although can't imagine workflow where such hotkeys are used intensively.
 * **Left-handed typing does not criple usual two-handed typing**, which is achieved via short **2-handed-timer**
 * **Dedicated 2-handed mode** in which 1-handed features that might interfere with speed typing (layers and chords) are completely turned off.
   Do not confuse it with normal OPRIQ mode, in which 2-handed typing works too (via aforementioned 2-handed-timer).
-  > I actually only use it in gaming though.
+  > I only need to use dedicated 2h-mode only in gaming.
 * **Does not require any additional non-standard hardware** (just a normal ANSI/ISO-keyboard is needed)
 * **Introduces only minor changes to QWERTY layout** (relearning should be a breeze)
 
 Requirements:
 * Standard ANSI/ISO-keyboard 
-* Ideally keyboard that has 6NKRO support (Anti-ghosting)
-  > Without it some tricky key combinations (like `Alt+Shift+Space+Q`) might not work depending on keyboard,
-  > still 95% of key combination will work, and remaining 5% will still be pressable with two hands as usual
+* Ideally keyboard that has 6NKRO support (anti-ghosting), although not obligatory
+  > Without 6NKRO some tricky key combinations (like `Alt+Shift+Space+Q`) might not work depending on keyboard,
+  > still 95% of key combination will work, and remaining 5% will still be pressable with two hands as usual.
+  > 
+  > See 1h-coding demo video — I use cheap membrane keyboard there and experience no problems.
+  > Still, this keyboard choked on some other rare (not used in video) key combinations.
 * OPRIQ works on [AutoHotKey v2.0](https://www.autohotkey.com/), so **only Windows is supported** (for now?)
+  > OPRIQ idea can be implemented on QMK, on Linux, Mac, etc. I currently don't plan doing it myself though.
+* OPRIQ requires standard english QWERTY layout to be present in system
 
 My personal OPRIQ story:
 * OPRIQ development took 8 years (2013-2021) with rigorous battle-testing of 5 vastly different layout iterations each built from scratch
@@ -75,6 +84,14 @@ layers\...
 LCtrl + ...
 
 <!-- __________________________________________________________________________/ }}}1 -->
+<!-- Second language support ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+
+# Second language support
+
+ru-lang, ZHGIEZH
+
+<!-- __________________________________________________________________________/ }}}1 -->
+
 <!-- Issues ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # Known Issues
@@ -83,28 +100,46 @@ Currently sometimes (like few times during a work day) below issues occur.
 
 ## RAlt sometimes sends Alt (along with opening Nav layer)
 
-Holding RAlt (which supposed to open Navigation layer), sometimes also sends original RAlt key.
+Holding RAlt (which supposed to only open Navigation layer), sometimes also sends original RAlt key.
 
 RAlt (AltGr) is notorious for creating problems in AutoHotKey.
-So the only solution I came up with is remapping RAlt to F14 on register level via Sharpkeys or similar software.
+So the only solution I came up with is **remapping RAlt to F14 on register level** via Sharpkeys or similar software.
 OPRIQ will recognize F14 accordingly.
 
 ## CAPS Lock sometimes fires unwantedly (instead of LCtrl)
 
-Same issue as with RAlt. Same solution also: remap CAPS to F13 via Sharpkeys or similar software.
+Same issue as with RAlt. Same solution also: **remap CAPS to F13** via Sharpkeys or similar software.
 OPRIQ will recognize F13 accordingly.
 
 ## Shift sometimes sticks
 
-Entering letters with Shift sometimes 
-I am working on this issue. It should be solvable on AutoHotKey level.
+Entering letters with Shift sometimes holds Shift pressed. When it happens, just press both Shifts (left and right ones) and it will unstuck.
+
+*I am working on this issue. It should be solvable at AutoHotKey level.*
 
 <!-- __________________________________________________________________________/ }}}1 -->
-<!-- Second language support ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+<!-- Limitations ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
-# Second language support
+# Known Limitations
 
-ru-lang, ZHGIEZH
+Desktop usage:
+* OPRIQ does not work in Windows log-in screen. Treat your keyboard as normal QWERTY in this case.
+* Some protected forms in internet browsers (like finance-related) will process keyboard keys as if OPRIQ is not running
+* Working with remote devices:
+  * Sometimes OPRIQ on your local machine will be able to send correct keys to remote device. Sometimes not.
+  * Sometimes running OPRIQ direclty on remote machine will solve the issue. Sometimes not.
+
+Hardware limitations:
+* On keyboards without 6NKRO some tricky key combinations won't be recognized (in all the membrane keyboards I used it usually were some obscure seldom used hotkeys).
+  You still can enter those keys normally via 2 hands.
+* If you use DVORAK or other non-QWERTY layout, OPRIQ will not work correctly
+
+Not all games support 1h-mode properly:
+* One-shot keys usually work without problems (great for games like Diablo II, Shapez 2, Turing Complete)
+* Letter/number-keys that require holding will produce unwanted result:
+  * for example, `Space` (usually working as jump in games) will not have "hold Space for longer jump" capability
+  * another example is holding `s+d` (usually working as "move down left" in games) — it might send chord for `BS`, which is usually not what you want
+* Anyway, **dedicated 2h-mode** solves all those issues.
 
 <!-- __________________________________________________________________________/ }}}1 -->
 <!-- Install ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->

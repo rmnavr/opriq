@@ -1,25 +1,45 @@
 
-<!-- Intro ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+<!-- Intro + Demos ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # OPRIQ (OPtional RIght Qwerty)
 
-[![OPRIQ 1-handed coding](https://github.com/rmnavr/opriq/blob/main/Docs/1h_coding.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_coding.mp4)
-*(1-handed coding with OPRIQ layout)*
-
 ![2 main layers of OPRIQ layout](https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true)
-*(2 main layers of OPRIQ layout)*
 
----
+OPRIQ is keyboard layout with possibility of solo-left-handed-typing of any possible keys combinations. You can even code with only left hand.
+Normal 2-handed-typing works too (and it does NOT require tedious mode-switch).
+
+Table of Contents:
+- [Demonstrations](#Demonstrations)
+- [Overview](#Overview)
+- [Detailed layout description](#Detailed-layout-description)
+- [Configuration and usage](#Configuration-and-usage)
+- [Known Issues](#Known-Issues)
+- [Installation](#Installation)
+
+# Demonstrations
+
+On the fly switch between left-handed and 2-handed typing:
+
+[![OPRIQ 1h/2h-typing](https://github.com/rmnavr/opriq/blob/main/Docs/2h_switch.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_1h2h.mp4)
+
+1-handed coding with OPRIQ layout:
+
+[![OPRIQ 1-handed coding](https://github.com/rmnavr/opriq/blob/main/Docs/1h_coding.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_coding.mp4)
+
+<!-- __________________________________________________________________________/ }}}1 -->
+<!-- Overview ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+
+# Overview
 
 OPRIQ is keyboard layout with following capabilities:
 * Killer-feature of OPRIQ is **FULL left-handed typing support** via **layers**, **double-function keys** and minimum number of **chords**.
-  You can even write code just with one hand (with all the naughty symbols like `{`, `$`, `=` and such)
   > **FULL** left-handed typing support means that **ANY combination of keys is possible to press with one hand**, including:
-  > `Enter`, numbers, arrows, F1..F12, etc. plus any combination of Alt/Ctrl/Shift/Win.
+  > symbols, numbers, arrows, F1..F12, etc. plus any combination of Alt/Ctrl/Shift/Win.
   > OK, some tricky hotkeys (like `Win+Alt+Space+5` which sends `Win+Alt+0`) require quite a finger stretch,
   > although can't imagine workflow where such hotkeys are used intensively.
 * **Left-handed typing does not criple usual two-handed typing**, which is achieved via short **2-handed-timer**
-  > OPRIQ also has dedicated 2-handed mode, in which 1-handed features that might interfere with speed typing (layers and chords) are completely turned off.
+* **Dedicated 2-handed mode** in which 1-handed features that might interfere with speed typing (layers and chords) are completely turned off.
+  Do not confuse it with normal OPRIQ mode, in which 2-handed typing works too (via aforementioned 2-handed-timer).
   > I actually only use it in gaming though.
 * **Does not require any additional non-standard hardware** (just a normal ANSI/ISO-keyboard is needed)
 * **Introduces only minor changes to QWERTY layout** (relearning should be a breeze)
@@ -37,16 +57,9 @@ My personal OPRIQ story:
 * My current typing speed in OPRIQ is (normal/record): 90/110 wpm two-handed, 50/75 wpm one-handed
 * I use OPRIQ mainly for CAD work: entering hotkeys with left hand, mousing with right hand
 * Since 2021 I type only in OPRIQ and consider it to be my endgame layout
+* No, I normaly don't use OPRIQ for one-handed coding, I use 2 hands for coding like a sane person
 
 <!-- __________________________________________________________________________/ }}}1 -->
-
----
-
-Table of Contents:
-- [Detailed layout description](#Detailed-layout-description)
-- [Configuration and usage](#Configuration-and-usage)
-- [Known Issues](#Known-Issues)
-- [Installation](#Installation)
 
 <!-- Description ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 

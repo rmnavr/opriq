@@ -1,14 +1,16 @@
 
-<!-- Intro + Demos ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+<!-- Intro + TOC ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # OPRIQ (OPtional RIght Qwerty)
 
-<p align="center"> <img src="https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true" alt="OPRIQ Home Layer" /> </p>
-
 OPRIQ is keyboard layout with possibility of solo-left-handed-typing of any possible keys combinations.
 You can even code with only left hand (see demo below).
-Normal 2-handed-typing works with all the bells-and-whistles too (like navigation and extra-symbols layers).
-And 2-handed-typing does NOT require tedious mode-switch (like in most other one-handed layouts).
+
+Most importantly, solo-left-handed-typing does NOT prevent you from two-handed typing.
+
+<p align="center">
+<img src="https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true" alt="OPRIQ Home Layer" />
+</p>
 
 OPRIQ was designed mainly for usage in hotkey-heavy software like Photoshop, various CADs and similar.
 
@@ -23,9 +25,12 @@ Table of Contents:
 - [Known Limitations](#Known-Limitations)
 - [Installation](#Installation)
 
+<!-- __________________________________________________________________________/ }}}1 -->
+<!-- Demo ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+
 # Demonstrations
 
-Standard ANSI-keyboards are used in videos below. I only colored key-caps for better layout visibility.
+Standard ANSI-keyboards are used in videos below. Key-caps are colored for better layout visibility.
 
 *On the fly switch between left-handed and 2-handed typing:*
 
@@ -36,6 +41,34 @@ Standard ANSI-keyboards are used in videos below. I only colored key-caps for be
 [![OPRIQ 1-handed coding](https://github.com/rmnavr/opriq/blob/main/Docs/1h_coding.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_coding.mp4)
 
 <!-- __________________________________________________________________________/ }}}1 -->
+<!-- Description ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+
+# How it works
+
+> You can find all the schemes shown in this chapter in original excel `Docs/OPRIQ.xlsx` file
+
+OPRIQ has 2 distinct modes:
+* `1L2H` — main mode, you can type both with solo-left hand or with both hands
+* `ONLY2H` — auxiliary mode in which one-handed typing features are completely turned off;
+  it is as compatibility feature for games and software that respond bad to 1L2H mode
+
+# MODE 1L2H
+
+Naming `1L2H` is a shorthand for "solo-left-handed OR two-handed".
+
+
+
+<p align="center">
+<img src="https://github.com/rmnavr/opriq/blob/main/Docs/1L2H.png?raw=true" alt="MODE 1L2H" />
+</p>
+
+
+
+<!-- __________________________________________________________________________/ }}}1 -->
+
+
+
+
 <!-- Overview ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # Overview
@@ -69,20 +102,13 @@ Requirements:
 My personal OPRIQ story:
 * OPRIQ development took 8 years (2013-2021) with rigorous battle-testing of 5 vastly different layout iterations each built from scratch
   (including complete relearning of typing for each iteration)
-* My current typing speed in OPRIQ is (normal/record): 90/110 wpm two-handed, 50/75 wpm one-handed
+* My current typing speed in OPRIQ is (normal/record): 95/115 wpm two-handed, 55/75 wpm one-handed
 * I use OPRIQ mainly for CAD work: entering hotkeys with left hand, mousing with right hand
-* Since 2021 I type only in OPRIQ and consider it to be my endgame layout
 * No, I normaly don't use OPRIQ for one-handed coding, I use 2 hands for coding like a sane person
+* Since 2021 I type only in OPRIQ and consider it to be my endgame layout
 
 <!-- __________________________________________________________________________/ }}}1 -->
 
-<!-- Description ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
-
-# Detailed layout description
-
-layers\...
-
-<!-- __________________________________________________________________________/ }}}1 -->
 <!-- Config and usage ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # Configuration and usage
@@ -90,7 +116,7 @@ layers\...
 LCtrl + ...
 
 <!-- __________________________________________________________________________/ }}}1 -->
-<!-- Variations ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+<!-- Variations ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # Variations
 

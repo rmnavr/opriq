@@ -28,10 +28,9 @@ Table of Contents:
 - [Demonstrations](#Demonstrations)
 - [How it works](#How-it-works)
 - [Second language support](#Second-language-support)
-- [Known Issues](#Known-Issues)
-- [Known Limitations](#Known-Limitations)
 - [Variations](#Variations)
 - [Requirements](#Requirements)
+- [Known Issues](#Known-Issues)
 - [Installation](#Installation)
 
 <!-- __________________________________________________________________________/ }}}1 -->
@@ -126,30 +125,39 @@ Hold `LCtrl` (bottom left key of keyboard) to open `CNFG` layer.
 </p>
 
 You can do all sorts of things in `CNFG` layer including:
-* Switch modes: `1L2H` <-> `ONLY2H`
-* Suspend and Activate app. Suspend deactivates all hotkeys except Suspend/Activate/Reload commands on `CNFG` layer.
-* Activate CAPS Lock (including for unstucking it, see [Known Issues](#Known-Issues))
-* Activate mini-GUI — it will indicate active mode (`1L2H` or `ONLY2H`) and for `1L2H` will also show
+* **Switch modes**: `1L2H` <-> `ONLY2H`
+* **Suspend** and **Activate** app. Suspend deactivates all hotkeys except Suspend/Activate/Reload commands on `CNFG` layer.
+* **Reload** App. Use it when smth is stuck.
+* Activate **CAPS Lock** (including for unstucking it, see [Known Issues](#Known-Issues))
+* Activate **mini-GUI** — it will indicate active mode (`1L2H` or `ONLY2H`) and for `1L2H` will also show
   if 2-handed-timer is active (indicating that 1L-features are suppresed for ~1 second) 
 
 <!-- __________________________________________________________________________/ }}}1 -->
+<!-- TFNJ ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
-<!-- Requirements ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+# TFNJ Variation
 
-# Requirements
+**By default variation described below is turned off, because I don't think it fits well for general user.**
 
-* **Standard ANSI/ISO-keyboard**
-* OPRIQ works on [AutoHotKey v2.0](https://www.autohotkey.com/), so **only Windows is supported** 
-  > OPRIQ idea can be implemented on QMK, on Linux, Mac, etc. I currently don't have plans of doing it myself though.
-* Ideally keyboard that has **6NKRO support** (anti-ghosting), although not obligatory
-  > Without 6NKRO some tricky key combinations (like `Alt+Shift+Space+Q`) might not work depending on keyboard,
-  > still 95% of key combination will work, and remaining 5% will still be pressable with two hands as usual.
-  > 
-  > See 1h-coding demo video above — I use cheap membrane keyboard there and experience no problems.
-  > Still, this keyboard choked on some other rare (not used in video) key combinations.
-* OPRIQ builds from **standard english QWERTY layout** 
+I personally use OPRIQ with T/F and N/J keys swapped (because T and N are much more frequent than F and J).
+This change is accordingly propagated to all modes/layers/chords.
+In demo videos I use this TFNJ version. It makes left index finder life noticeably easier for left-handed typing.
+
+<p align="center">
+<img src="https://github.com/rmnavr/opriq/blob/main/Docs/TFNJ.png?raw=true" alt="TFNJ variation" />
+</p>
+
+If you want to try it, then edit `OPRIQ.ahk2` source code and change this line (in the beginning of the file):
+```ahk
+activate_TFNJ := False
+```
+to this:
+```ahk
+activate_TFNJ := True
+```
 
 <!-- __________________________________________________________________________/ }}}1 -->
+
 <!-- Second language support ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # Second language support
@@ -157,25 +165,12 @@ You can do all sorts of things in `CNFG` layer including:
 ru-lang, ZHGIEZH
 
 <!-- __________________________________________________________________________/ }}}1 -->
-<!-- Variations ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
-
-# Variations
-
-OPRIQ comes in 2 variations:
-* `OPRIQ_Base.ahk2` — OPRIQ based on normal QWERTY
-* `OPRIQ_TFNJ.ahk2` — the only changes are that `T` is swapped with `F`, and `N` is swapped with `J`
-  (meaning `N` and `T` are placed at home row since they are much more frequent than `F` and `J`)
-
-I personally use TFNJ, since Base version somewhat cripples index finger in one-handed typing.
-However I recommend trying Base version first to see if OPRIQ overall works for you (it requires minimal relearning from standard QWERTY).
-
-<!-- __________________________________________________________________________/ }}}1 -->
 
 <!-- Issues ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # Known Issues
 
-# Limitations
+## Limitations
 
 * OPRIQ does not work in Windows log-in screen. Treat your keyboard as normal QWERTY in this case.
 * Some protected forms in internet browsers (like finance-related) will process keyboard keys as if OPRIQ is not running
@@ -185,7 +180,7 @@ However I recommend trying Base version first to see if OPRIQ overall works for 
 > Changing source language to smth like C++/Rust, or building QMK version of OPRIQ might solve those issues.
 > I don't plan to implement any of that though.
 
-## Partially solved AutoHotKey issues
+## AutoHotKey issues (solved with compromise)
 
 Few times during a work day below issues might occur:
 * Holding `RAlt` (which supposed to only open `NAVIGATION` layer), sometimes also sends original `RAlt` key. Any subsequent key presses work as usual.
@@ -209,41 +204,47 @@ There are 2 known bugs which I am trying to solve. Their frequency is like 1..2 
 * In `ONLY2H` mode, chording keys might stuck (although there are no chords in `ONLY2H`). Press key again and it will unstuck.
 
 <!-- __________________________________________________________________________/ }}}1 -->
-<!-- Limitations ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+<!-- Requirements ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
+# Requirements
+
+Software:
+* OPRIQ works on [AutoHotKey v2.0](https://www.autohotkey.com/), so **only Windows is supported** 
+  > OPRIQ idea can be implemented on QMK, on Linux, Mac, etc. I currently don't have plans of doing it myself though.
+* OPRIQ needs to be launched when **standard english QWERTY layout** is currently selected in the system
+
+Hardware:
+* You'll need **standard ANSI/ISO-keyboard** (all docs are build around ANSI keyboard, however changes to ISO should be obvious)
+* Ideally keyboard should have **6NKRO support** (anti-ghosting), although not obligatory
+  > Without 6NKRO some tricky key combinations (like `Alt+Shift+Space+Q`) might not work depending on keyboard.
+  > Still 99% of any reasonable key combination will probably work, and remaining 1% will be pressable with two hands as usual.
+  > 
+  > However for best learning experience it is better to use 6NKRO (because in some unexpected behaviour you'll be sure it is not hardware to blame).
 
 <!-- __________________________________________________________________________/ }}}1 -->
 <!-- Install ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # Installation
 
+There 2 ways to launch OPRIQ.
+
+> For both those options if you want to completely get rid of [RALt and CAPS Lock issues](#Known-Issues),
+> make described remaps at register level. It is not required though.
+
+## Without installing AutoHotKey (simplier way)
+
+1. Download `OPRIQ.exe`, `OPRIQ_01.png` and `OPRIQ_02.png` to some folder.
+2. Make sure your active layout is QWERTY (if it's not, some keys might not work).
+3. Run `OPRIQ.exe`.
+4. You'll see OPRIQ icon in tray indicating it is now working.
+
+## With AutoHotKey
+
 1. Install [AutoHotKey v2.0](https://www.autohotkey.com/)
-2. If you want to completely get rid of [RALt and CAPS Lock issues](#Known-Issues),
-   remap at register level `RAlt` to `F14` and `CAPS` to `F13` via Sharpkeys or similar software.
-3. Download OPRIQ.ahk2 to your PC and double-click it (or open it with AutoHotKey64.exe if *.ahk2 file extension was not recognized automatically)
-4. You'll see OPRIQ tray icon, indicating it is now working
-
-<!-- __________________________________________________________________________/ }}}1 -->
-
-<!-- Overview ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
-
-# Overview
-
-OPRIQ is keyboard layout with following capabilities:
-* Killer-feature of OPRIQ is **full left-handed typing support** via **layers**, **double-function keys**,
-  **duplication of modifiers keys** and minimum number of **chords**.
-  > "Full left-handed typing support" means that **ANY combination of keys is possible to press with one hand** including:
-  > symbols, numbers, arrows, F1..F12, etc. plus any combination of Alt/Ctrl/Shift/Win.
-  > OK, some tricky hotkeys (like `Win+Alt+Space+5` which sends `Win+Alt+0`) require quite a finger stretch,
-  > although can't imagine workflow where such hotkeys are used intensively.
-* **Left-handed typing does not criple usual two-handed typing**, which is achieved via short **2-handed-timer**
-* **Dedicated 2-handed mode** in which 1-handed features that might interfere with speed typing (layers and chords) are completely turned off.
-  Do not confuse it with normal OPRIQ mode, in which 2-handed typing works too (via aforementioned 2-handed-timer).
-  > In my experience, the need to use dedicated 2h-mode arises only in gaming.
-* **Does not require any non-standard keyboard** (just a normal membrane ANSI/ISO-keyboard is enough)
-* **Introduces only minor changes to QWERTY layout** (relearning should be a breeze)
-
-
+2. Download `OPRIQ.ahk2`, `OPRIQ_01.png` and `OPRIQ_02.png` to some folder.
+3. Make sure your active layout is QWERTY (if it's not, some keys might not work).
+4. Double-click `OPRIQ.ahk2` (or open it with `AutoHotKey64.exe` if `*.ahk2` file extension was not recognized automatically)
+5. You'll see OPRIQ icon in tray indicating it is now working.
 
 <!-- __________________________________________________________________________/ }}}1 -->
 

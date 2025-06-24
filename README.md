@@ -20,7 +20,7 @@ OPRIQ doesn't require any special keyboard, and builds on standard QWERTY layout
 <img src="https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true" alt="OPRIQ Home Layer" />
 </p>
 
-OPRIQ was designed mainly for usage in hotkey-heavy software like Photoshop, various CADs and similar.
+OPRIQ works best with hotkey-heavy software like Photoshop, various CADs and similar.
 It is built on [AutoHotKey v2.0](https://www.autohotkey.com/) and currently works only on Windows.
 
 Table of Contents:
@@ -59,8 +59,11 @@ Standard ANSI-keyboards are used in videos below. Key-caps are colored for bette
 OPRIQ has 2 distinct modes:
 * `1L2H` — main mode, you can type both with solo-left hand or with both hands
   > Naming `1L2H` is a shorthand for phrase "solo-left-handed OR two-handed"
-* `ONLY2H` — auxiliary mode in which one-handed typing features are completely turned off;
-  it is a compatibility feature for games and software that respond bad to 1L2H mode
+* `ONLY2H` — compatibility mode for games and software that respond bad to 1L2H mode; it simply
+  switches off all 1L-features of OPRIQ
+
+You can switch between modes via `CNFG` layer (reachable through original `LCtrl` key).
+OPRIQ tray icon will change accrodingly.
 
 ## MODE 1L2H (main mode)
 
@@ -77,12 +80,13 @@ OPRIQ has 2 distinct modes:
   > but it is just a `TEXT2` with all keys seen as if `LAlt` is pressed.
   > This layer enables user to send `LAlt`-modified keys, while user's thumb is already busy with `Space` key.
 * 3 **chords** (simultaneous key presses) at homerow that enable entering `BS`/`Enter`/`Delete`
-  > keys from `HOME` layer. Modifiers (Alt/Ctrl/Shift) work with chords too.
+  keys from `HOME` layer. Modifiers (Alt/Ctrl/Shift) work with chords too.
   > In the long run I found chords to be less crippling on the left hand than reaching to `BS`/`Enter`/`Delete`
   > from `NAVIGATION` layer.
 * Pressing any of right-handed keys will disable `SPACE`/`TAB` from their layer-changing features,
   and will also disable **chords** — all of that **for a timer of 1 second**
-  (`RAlt` will still be able to open `NAVIGATION` layer though). You can see if timer is active via GUI (describe further).
+  (`RAlt` will still be able to open `NAVIGATION` layer though).
+  You can see if timer is active via GUI (described further).
   > This feature becomes crucial once you exceed 60 wpm two-handed typing speed.
   > Because when you are speed-typing, you will not need to worry about accidentally
   > holding `Space` for too long (thus unwantedly opening `TEXT2` layer) and things like that.
@@ -93,7 +97,34 @@ Alt+TAB has a special recognition:
 
 ## MODE ONLY2H (compatibility mode)
 
-Games that require holding `Space`/`S`/`D`/`T` 
+Games (or other software) that require holding `TAB`/`Space`/`S`/`D`/`T` might work bad with OPRIQ.
+`TAB`/`Space` will open layers, `S`/`D`/`T` will send chords if pressed simultaneously.
+Im most games this is not what you want.
+
+For such a case you can use `ONLY2H` mode, in which keyboard has no one-handed features (it's chords and layers),
+although it keeps it's main layout. You'll still `NAVIGATION` layer reachable through `RAlt`, and `CNFG` layer as usual.
+
+<p align="center">
+<img src="https://github.com/rmnavr/opriq/blob/main/Docs/ONLY2H.png?raw=true" alt="MODE ONLY2H" />
+</p>
+
+> BTW, in programming games like Shapez 2, Turing Complete, etc. 
+> opening layers and sending chords may be exactly what you want — so `1L2H` mode will work great there.
+
+## Configuration layer
+
+Hold `LCtrl` (bottom left key of keyboard) to open `CNFG` layer.
+
+<p align="center">
+<img src="https://github.com/rmnavr/opriq/blob/main/Docs/ONLY2H.png?raw=true" alt="MODE ONLY2H" />
+</p>
+
+You can do all sorts of things in `CNFG` layer including:
+* Suspend (deactivate all hotkeys except `CNFG` layer) and Activate app
+* Switch modes: `1L2H` <-> `ONLY2H`
+* Activate CAPS Lock (including for unstucking it, see [Known Issues](#Known-Issues))
+* Activate mini-GUI — it will indicate active mode (`1L2H` or `ONLY2H`) and for `1L2H` will also show
+  if 2-handed-timer is active (indicating that 1L-features are suppresed for ~1 second) 
 
 <!-- __________________________________________________________________________/ }}}1 -->
 

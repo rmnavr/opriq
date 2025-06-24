@@ -62,8 +62,8 @@ OPRIQ has 2 distinct modes:
 * `ONLY2H` — compatibility mode for games and software that respond bad to 1L2H mode; it simply
   switches off all 1L-features of OPRIQ
 
-You can switch between modes via `CNFG` layer (reachable through original `LCtrl` key).
-OPRIQ tray icon will change accrodingly.
+You can switch between modes via `CNFG` layer (reachable through original `LCtrl` key, more on that below).
+OPRIQ tray icon will change accordingly.
 
 ## MODE 1L2H (main mode)
 
@@ -79,7 +79,7 @@ OPRIQ tray icon will change accrodingly.
   > Also there is `TEXT2ALT` layer (reached by holding both `TAB` and `Space`),
   > but it is just a `TEXT2` with all keys seen as if `LAlt` is pressed.
   > This layer enables user to send `LAlt`-modified keys, while user's thumb is already busy with `Space` key.
-* 3 **chords** (simultaneous key presses) at homerow that enable entering `BS`/`Enter`/`Delete`
+* 3 **chords** (simultaneous key presses) at home row that enable entering `BS`/`Enter`/`Delete`
   keys from `HOME` layer. Modifiers (Alt/Ctrl/Shift) work with chords too.
   > In the long run I found chords to be less crippling on the left hand than reaching to `BS`/`Enter`/`Delete`
   > from `NAVIGATION` layer.
@@ -87,8 +87,8 @@ OPRIQ tray icon will change accrodingly.
   and will also disable **chords** — all of that **for a timer of 1 second**
   (`RAlt` will still be able to open `NAVIGATION` layer though).
   You can see if timer is active via GUI (described further).
-  > This feature becomes crucial once you exceed 60 wpm two-handed typing speed.
-  > Because when you are speed-typing, you will not need to worry about accidentally
+  > Timer feature becomes crucial once you exceed 60 wpm two-handed typing speed.
+  > Due to this timer, when you are speed-typing, you will not need to worry about accidentally
   > holding `Space` for too long (thus unwantedly opening `TEXT2` layer) and things like that.
 
 Alt+TAB has a special recognition:
@@ -102,7 +102,8 @@ Games (or other software) that require holding `TAB`/`Space`/`S`/`D`/`T` might w
 Im most games this is not what you want.
 
 For such a case you can use `ONLY2H` mode, in which keyboard has no one-handed features (it's chords and layers),
-although it keeps it's main layout. You'll still `NAVIGATION` layer reachable through `RAlt`, and `CNFG` layer as usual.
+although it keeps it's main layout. You'll still have `NAVIGATION` layer reachable through `RAlt`,
+and `CNFG` layer as usual.
 
 <p align="center">
 <img src="https://github.com/rmnavr/opriq/blob/main/Docs/ONLY2H.png?raw=true" alt="MODE ONLY2H" />
@@ -116,7 +117,7 @@ although it keeps it's main layout. You'll still `NAVIGATION` layer reachable th
 Hold `LCtrl` (bottom left key of keyboard) to open `CNFG` layer.
 
 <p align="center">
-<img src="https://github.com/rmnavr/opriq/blob/main/Docs/ONLY2H.png?raw=true" alt="MODE ONLY2H" />
+<img src="https://github.com/rmnavr/opriq/blob/main/Docs/CNFG.png?raw=true" alt="LAYER CNFG" />
 </p>
 
 You can do all sorts of things in `CNFG` layer including:

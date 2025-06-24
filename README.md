@@ -1,5 +1,5 @@
 
-<!-- Intro + TOC ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+<!-- Intro (+ TOC) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # OPRIQ (OPtional RIght Qwerty)
 
@@ -20,18 +20,20 @@ OPRIQ doesn't require any special keyboard, and builds on standard QWERTY layout
 <img src="https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true" alt="OPRIQ Home Layer" />
 </p>
 
-OPRIQ works best with hotkey-heavy software like Photoshop, various CADs and similar.
+OPRIQ shines when working in hotkey-heavy software like Photoshop, various CADs and similar.
+
 It is built on [AutoHotKey v2.0](https://www.autohotkey.com/) and currently works only on Windows.
+
+
 
 Table of Contents:
 - [Demonstrations](#Demonstrations)
-- [Overview](#Overview)
-- [Detailed layout description](#Detailed-layout-description)
-- [Configuration and usage](#Configuration-and-usage)
-- [Variations](#Variations)
+- [How it works](#How-it-works)
 - [Second language support](#Second-language-support)
 - [Known Issues](#Known-Issues)
 - [Known Limitations](#Known-Limitations)
+- [Variations](#Variations)
+- [Requirements](#Requirements)
 - [Installation](#Installation)
 
 <!-- __________________________________________________________________________/ }}}1 -->
@@ -121,53 +123,35 @@ Hold `LCtrl` (bottom left key of keyboard) to open `CNFG` layer.
 </p>
 
 You can do all sorts of things in `CNFG` layer including:
-* Suspend (deactivate all hotkeys except `CNFG` layer) and Activate app
 * Switch modes: `1L2H` <-> `ONLY2H`
+* Suspend and Activate app. Suspend deactivates all hotkeys except Suspend/Activate/Reload commands on `CNFG` layer.
 * Activate CAPS Lock (including for unstucking it, see [Known Issues](#Known-Issues))
 * Activate mini-GUI — it will indicate active mode (`1L2H` or `ONLY2H`) and for `1L2H` will also show
   if 2-handed-timer is active (indicating that 1L-features are suppresed for ~1 second) 
 
 <!-- __________________________________________________________________________/ }}}1 -->
 
+<!-- Requirements ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
-<!-- Overview ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+# Requirements
 
-# Overview
-
-OPRIQ is keyboard layout with following capabilities:
-* Killer-feature of OPRIQ is **full left-handed typing support** via **layers**, **double-function keys**,
-  **duplication of modifiers keys** and minimum number of **chords**.
-  > "Full left-handed typing support" means that **ANY combination of keys is possible to press with one hand** including:
-  > symbols, numbers, arrows, F1..F12, etc. plus any combination of Alt/Ctrl/Shift/Win.
-  > OK, some tricky hotkeys (like `Win+Alt+Space+5` which sends `Win+Alt+0`) require quite a finger stretch,
-  > although can't imagine workflow where such hotkeys are used intensively.
-* **Left-handed typing does not criple usual two-handed typing**, which is achieved via short **2-handed-timer**
-* **Dedicated 2-handed mode** in which 1-handed features that might interfere with speed typing (layers and chords) are completely turned off.
-  Do not confuse it with normal OPRIQ mode, in which 2-handed typing works too (via aforementioned 2-handed-timer).
-  > In my experience, the need to use dedicated 2h-mode arises only in gaming.
-* **Does not require any non-standard keyboard** (just a normal membrane ANSI/ISO-keyboard is enough)
-* **Introduces only minor changes to QWERTY layout** (relearning should be a breeze)
-
-Requirements:
 * **Standard ANSI/ISO-keyboard**
+* OPRIQ works on [AutoHotKey v2.0](https://www.autohotkey.com/), so **only Windows is supported** 
+  > OPRIQ idea can be implemented on QMK, on Linux, Mac, etc. I currently don't have plans of doing it myself though.
 * Ideally keyboard that has **6NKRO support** (anti-ghosting), although not obligatory
   > Without 6NKRO some tricky key combinations (like `Alt+Shift+Space+Q`) might not work depending on keyboard,
   > still 95% of key combination will work, and remaining 5% will still be pressable with two hands as usual.
   > 
   > See 1h-coding demo video above — I use cheap membrane keyboard there and experience no problems.
   > Still, this keyboard choked on some other rare (not used in video) key combinations.
-* OPRIQ works on [AutoHotKey v2.0](https://www.autohotkey.com/), so **only Windows is supported** 
-  > OPRIQ idea can be implemented on QMK, on Linux, Mac, etc. I currently don't have plans of doing it myself though.
 * OPRIQ builds from **standard english QWERTY layout** 
 
-
 <!-- __________________________________________________________________________/ }}}1 -->
+<!-- Second language support ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
-<!-- Config and usage ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+# Second language support
 
-# Configuration and usage
-
-LCtrl + ...
+ru-lang, ZHGIEZH
 
 <!-- __________________________________________________________________________/ }}}1 -->
 <!-- Variations ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
@@ -181,13 +165,6 @@ OPRIQ comes in 2 variations:
 
 I personally use TFNJ, since Base version somewhat cripples index finger in one-handed typing.
 However I recommend trying Base version first to see if OPRIQ overall works for you (it requires minimal relearning from standard QWERTY).
-
-<!-- __________________________________________________________________________/ }}}1 -->
-<!-- Second language support ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
-
-# Second language support
-
-ru-lang, ZHGIEZH
 
 <!-- __________________________________________________________________________/ }}}1 -->
 
@@ -257,7 +234,30 @@ Not all games support 1h-mode properly:
 
 * Since 2021 I type only in OPRIQ and consider it to be my endgame layout. 
   I don't plan on changing any of core OPRIQ ideas or developing new layout.
-* My current typing speed in OPRIQ is (normal/record): 95/115 wpm two-handed, 55/75 wpm one-handed
+* My current typing speed in OPRIQ is (normal/record): 95/115 wpm two-handed, 55/75 wpm one-handed.
+  My record speed on QWERTY was previously 115 wpm too.
 * I use OPRIQ mainly for CAD work: entering hotkeys with left hand, mousing with right hand
-* No, I normaly don't use OPRIQ for one-handed coding, I use 2 hands for coding like a sane person
+* No, I normaly don't use OPRIQ for one-handed coding, I use 2 hands
+
+<!-- Overview ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+
+# Overview
+
+OPRIQ is keyboard layout with following capabilities:
+* Killer-feature of OPRIQ is **full left-handed typing support** via **layers**, **double-function keys**,
+  **duplication of modifiers keys** and minimum number of **chords**.
+  > "Full left-handed typing support" means that **ANY combination of keys is possible to press with one hand** including:
+  > symbols, numbers, arrows, F1..F12, etc. plus any combination of Alt/Ctrl/Shift/Win.
+  > OK, some tricky hotkeys (like `Win+Alt+Space+5` which sends `Win+Alt+0`) require quite a finger stretch,
+  > although can't imagine workflow where such hotkeys are used intensively.
+* **Left-handed typing does not criple usual two-handed typing**, which is achieved via short **2-handed-timer**
+* **Dedicated 2-handed mode** in which 1-handed features that might interfere with speed typing (layers and chords) are completely turned off.
+  Do not confuse it with normal OPRIQ mode, in which 2-handed typing works too (via aforementioned 2-handed-timer).
+  > In my experience, the need to use dedicated 2h-mode arises only in gaming.
+* **Does not require any non-standard keyboard** (just a normal membrane ANSI/ISO-keyboard is enough)
+* **Introduces only minor changes to QWERTY layout** (relearning should be a breeze)
+
+
+
+<!-- __________________________________________________________________________/ }}}1 -->
 

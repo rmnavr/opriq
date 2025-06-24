@@ -9,16 +9,31 @@
 
         show_gui_on_startup  := False
 
+	; OPRIQ modifications:
+
+		; I have some of extra modifications to OPRIQ that won't probably suit general user.
+		; I keep these modification in this file to not bother with keeping 2 different source files,
+		; however on public versions of OPRIQ those modifications are turned off by default.
+
+        activate_TFNJ := True
+        activate_RAVR := True
+
+	; ===================================================================================================
     ; Dev setup:
+
+		FT1 := activate_TFNJ ? "t" : "f"
+		FT2 := activate_TFNJ ? "f" : "t"
+		JN1 := activate_TFNJ ? "n" : "j"
+		JN2 := activate_TFNJ ? "j" : "n"
 
         SendMode "Input"
         Send "{RAlt Up}{Shift Up}{Ctrl Up}{F13 Up}{F14 Up}{F15 Up}"
-        ;A_MenuMaskKey := "vk00sc000"
+        ; A_MenuMaskKey := "vk00sc000"
 
 		TraySetIcon "OPRIQ_01.png"
 		A_IconTip := "[OP]tional [RI]ght [Q]werty (TF/NJ)"
 
-        ; classes:
+        ; possible layers:
         KB_Layers := {Error: 0, Home: 1, Text2: 2, Text2withAlt: 3, Navi: 4, Symbols: 5}
 
         ; system vars:
@@ -29,11 +44,11 @@
         right_KB_half_recently_active   := False
         mode_const_2h                   := False
 
-        chords_keysPressed := [False, False, False]
+        chords_keysPressed    := [False, False, False]
         chords_gatheringPhase := 0
-        chords_start_sleep := 100 
-        chords_end_sleep   := 30
-        chords_step_sleep  := 10
+        chords_start_sleep    := 100 
+        chords_end_sleep      := 30
+        chords_step_sleep     := 10
 
 ; _____________________________________________________________________________/ }}}1
 
@@ -226,49 +241,7 @@
 ; _____________________________________________________________________________/ }}}1
 
 #SuspendExempt
-; [Hotkeys] «CapsLock», «LCtrl» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    *$F13::LCtrl
-    *$F15::Return
-
-    *$CapsLock::LCtrl
-    *$LCtrl::Return
-
-    *$LCtrl up:: {
-        if (GetKeyState("LCtrl")=1) {
-            Send "{Blind}{LCtrl Up}"
-        }
-    }
-
-; _____________________________________________________________________________/ }}}1
-; [Hotkeys] Mouse ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    *$XButton1::MButton
-    *$XButton2::Return
-
-    #HotIf GetKeyState("XButton2","P")=1
-        MButton::SendEvent "{Media_Play_Pause}"
-        WheelUp::SendEvent "{Volume_Up}"
-        WheelDown::SendEvent "{Volume_Down}"
-    #HotIf
-
-    #HotIf GetKeyState("XButton1","P")=1
-        WheelUp::WheelRight
-        WheelDown::WheelLeft
-    #HotIf
-
-; _____________________________________________________________________________/ }}}1
-; [Hotkeys] NumPad ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    #HotIf GetKeyState("Tab","P")=1
-           $*NumLock::SendEvent "{Blind}{Space}"
-         $*NumpadDiv::SendEvent "{Blind}+{9}"
-        $*NumpadMult::SendEvent "{Blind}+{0}"
-         $*NumpadSub::SendEvent "{Blind}{=}"
-    #HotIf
-
-; _____________________________________________________________________________/ }}}1
-; [Hotkeys] AppControls: Core ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Hotkeys] AppControls: Suspend/Activate/Reload ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
     ; «&» works with any modifiers pressed
     F15   & s::
@@ -292,6 +265,44 @@
 		SetWindowsKB("en")
 		Reload               
 	}
+
+; _____________________________________________________________________________/ }}}1
+; [Hotkeys] F13/F15 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+    *$F13::LCtrl
+    *$F15::Return
+
+; _____________________________________________________________________________/ }}}1
+#SuspendExempt False
+; [Hotkeys] «CapsLock», «LCtrl» ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+    *$CapsLock::LCtrl
+
+    *$LCtrl::Return
+
+    *$LCtrl up:: {
+        if (GetKeyState("LCtrl")=1) {
+            Send "{Blind}{LCtrl Up}"
+        }
+    }
+
+; _____________________________________________________________________________/ }}}1
+; [Hotkeys] AppControls: Core ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
+    F15   & 1:: 
+    LCtrl & 1:: {
+        activate_1L2h_mode()    
+        SoundBeep 200, 100
+        SoundBeep 300, 100
+    }
+
+    F15   & 2:: 
+    LCtrl & 2:: {
+        activate_2hOnly_mode()
+        SoundBeep 300, 100
+        SoundBeep 200, 100
+    }
+
 	
     F15   & g::guiF_show_hide() ; [G]UI
     LCtrl & g::guiF_show_hide() 
@@ -308,11 +319,7 @@
         SoundBeep 220, 100
     }
 
-; _____________________________________________________________________________/ }}}1
-; [Hotkeys] AppControls: Situational 1 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
-
-    F15   & ,::Run "desk.cpl"           ; [M]onitor
-    LCtrl & ,::Run "desk.cpl"          
+	; ====================================================
 
     F15   & e::
     LCtrl & e:: {
@@ -327,23 +334,40 @@
 		;SetWindowsKB("ru")
 	}
 
+    F15   & ,::Run "desk.cpl"           ; [M]onitor
+    LCtrl & ,::Run "desk.cpl"          
+
 ; _____________________________________________________________________________/ }}}1
-#SuspendExempt False
-; [Hotkeys] AppControls: Situational 2 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+; [Hotkeys] Mouse and NumPad (RAVR) ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-    F15   & 1:: 
-    LCtrl & 1:: {
-        activate_1L2h_mode()    
-        SoundBeep 200, 100
-        SoundBeep 300, 100
-    }
+	; MOUSE ==========================================
 
-    F15   & 2:: 
-    LCtrl & 2:: {
-        activate_2hOnly_mode()
-        SoundBeep 300, 100
-        SoundBeep 200, 100
-    }
+	#HotIf activate_RAVR
+
+		*$XButton1::MButton
+		*$XButton2::Return
+
+    #HotIf (activate_RAVR and GetKeyState("XButton2","P"))
+
+        MButton::SendEvent "{Media_Play_Pause}"
+        WheelUp::SendEvent "{Volume_Up}"
+        WheelDown::SendEvent "{Volume_Down}"
+
+    #HotIf (activate_RAVR and GetKeyState("XButton1","P"))
+
+        WheelUp::WheelRight
+        WheelDown::WheelLeft
+
+	; NUMPAD ==========================================
+
+    #HotIf (activate_RAVR and GetKeyState("Tab","P"))
+
+           $*NumLock::SendEvent "{Blind}{Space}"
+         $*NumpadDiv::SendEvent "{Blind}+{9}"
+        $*NumpadMult::SendEvent "{Blind}+{0}"
+         $*NumpadSub::SendEvent "{Blind}{=}"
+
+    #HotIf
 
 ; _____________________________________________________________________________/ }}}1
 
@@ -379,9 +403,9 @@
     get_cur_layer()
     {
     global 
-        space :=  GetKeyState("Space", "P") ? "Space_" : ""
+        space :=  GetKeyState("Space", "P")                             ? "Space_" : ""
         ralt  := (GetKeyState("RAlt" , "P") OR GetKeyState("F14", "P")) ? "RAlt_"  : ""
-        tab   :=  GetKeyState("Tab"  , "P") ? "Tab_"   : ""
+        tab   :=  GetKeyState("Tab"  , "P")                             ? "Tab_"   : ""
         layers_mask := space . ralt . tab
         ;
         Switch layers_mask {
@@ -521,7 +545,7 @@
         {
             case "100" : SendEvent "{Blind}{s DownR}"
             case "010" : SendEvent "{Blind}{d DownR}"
-            case "001" : SendEvent "{Blind}{t DownR}"
+            case "001" : SendEvent "{Blind}{" . FT1 . " DownR}"
             case "011" :
                 cur_sleep := chords_start_sleep
                 while (GetKeyState("d","P") and GetKeyState("f","P")) {
@@ -582,8 +606,8 @@
     }
 
     chords_Timer_3_up() {
-        SendEvent "{Blind}{t up}"
-        send_Up(["n", "Right"])
+        SendEvent "{Blind}{" . FT1 . " up}"
+        send_Up([JN1, "Right"])
     }
 
 ; ________________________________________________________________________/ }}}2
@@ -734,7 +758,7 @@
       $*w::send_DownR(  ["{w"      , False] ,"{o"       ,"!{o"      ,"✠{Enter"  ,""         )
       $*e::send_DownR(  ["{e"      , False] ,"{i"       ,"!{i"      ,"✠{Up"     ,""         )
       $*r::send_DownR(  ["{r"      , False] ,"{u"       ,"!{u"      ,"✠{BS"     ,""         )
-      $*t::send_DownR(  ["{f"      , False] ,"{y"       ,"!{y"      ,"XXX"      ,""         )
+      $*t::send_DownR(  ["{" . FT2 , False] ,"{y"       ,"!{y"      ,"XXX"      ,""         )
       $*y::send_DownR(  ["{\"      , False] ,"{SC01A"   ,"!{SC01A"  ,"✠{PgUp"   ,""         )
       $*u::send_DownR(  ["{y"      , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
       $*i::send_DownR(  ["{u"      , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
@@ -745,13 +769,13 @@
       $*\::send_DownR(  ["{SC01B"  , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
                     ;   [----------, -----] , --------- , --------- , --------- , ---------
       $*a::send_DownR(  ["{a"      , False] ,"{SC027"   ,"!{SC027"  ,"✠{Home"   ,""         )
-      ;s
-      ;d
-      ;f
+      ;s -> see in chords
+      ;d -> see in chords
+      ;f -> see in chords
       $*g::send_DownR(  ["{g"      , False] ,"{h"       ,"!{h"      ,"✠{End"    ,""         )
       $*h::send_DownR(  ["{SC028"  , False] ,"{SC01B"   ,"!{SC01B"  ,"✠{PgDn"   ,""         )
       $*j::send_DownR(  ["{h"      , True ] ,"XXX"      ,"XXX"      ,"XXX"      ,""         )
-      $*k::send_DownR(  ["{n"      , True ] ,"XXX"      ,"XXX"      ,"MOD"      ,""         )
+      $*k::send_DownR(  ["{" . JN1 , True ] ,"XXX"      ,"XXX"      ,"MOD"      ,""         )
       $*l::send_DownR(  ["{k"      , True ] ,"XXX"      ,"XXX"      ,"MOD"      ,""         )
      $*`;::send_DownR(  ["{l"      , True ] ,"XXX"      ,"XXX"      ,"MOD"      ,""         )
       $*'::send_DownR(  ["{SC027"  , True ] ,"XXX"      ,"XXX"      ,"MOD"      ,""         )
@@ -760,9 +784,9 @@
       $*x::send_DownR(  ["{x"      , False] ,"{SC034"   ,"!{SC034"  ,"•←"       ,""         )
       $*c::send_DownR(  ["{c"      , False] ,"{SC033"   ,"!{SC033"  ,"•↓"       ,""         )
       $*v::send_DownR(  ["{v"      , False] ,"{m"       ,"!{m"      ,"•→"       ,""         )
-      $*b::send_DownR(  ["{b"      , False] ,"{j"       ,"!{j"      ,"•↑"       ,""         )
+      $*b::send_DownR(  ["{b"      , False] ,"{" . JN2  ,"!{" . JN2 ,"•↑"       ,""         )
       $*n::send_DownR(  ["{SC035"  , False] ,""         ,""         ,"XXX"      ,""         )
-      $*m::send_DownR(  ["{j"      , True ] ,""         ,""         ,"XXX"      ,""         )
+      $*m::send_DownR(  ["{" . JN2 , True ] ,""         ,""         ,"XXX"      ,""         )
       $*,::send_DownR(  ["{m"      , True ] ,""         ,""         ,"✠{Space"  ,""         )
       $*.::send_DownR(  ["{SC033"  , True ] ,""         ,""         ,"✠{Del"    ,""         )
       $*/::send_DownR(  ["{SC034"  , True ] ,""         ,""         ,"✠{Tab"    ,""         )
@@ -794,7 +818,7 @@
       $*w up::send_Up(["w", "o", "Enter"])
       $*e up::send_Up(["e", "i", "Up"])
       $*r up::send_Up(["r", "u", "BS"])
-      $*t up::send_Up(["f", "y"])
+      $*t up::send_Up([FT2, "y"])
       $*y up::send_Up(["\", "SC01A", "PgUp"])
       $*u up::send_Up(["y"])
       $*i up::send_Up(["u"])
@@ -805,13 +829,13 @@
       $*\ up::send_Up(["SC01B"])
       ;
       $*a up::send_Up(["a", "SC027", "Home"])
-      ;s
-      ;d
-      ;f
+      ;s -> see in chords
+      ;d -> see in chords
+      ;f -> see in chords
       $*g up::send_Up(["g"       ,"h"       ,"End" ])
       $*h up::send_Up(["SC028"   ,"SC01B"   ,"PgDn"])
       $*j up::send_Up(["h"    ])
-      $*k up::send_Up(["n"    ])
+      $*k up::send_Up([JN1    ])
       $*l up::send_Up(["k"    ])
      $*`; up::send_Up(["l"    ])
       $*' up::send_Up(["SC027"])
@@ -820,9 +844,9 @@
       $*x up::send_Up(["x"       ,"SC034"   ])
       $*c up::send_Up(["c"       ,"SC033"   ])
       $*v up::send_Up(["v"       ,"m"       ])
-      $*b up::send_Up(["b"       ,"j"       ])
+      $*b up::send_Up(["b"       ,JN2       ])
       $*n up::send_Up(["SC035"   ])
-      $*m up::send_Up(["j"       ])
+      $*m up::send_Up([JN2       ])
       $*, up::send_Up(["m"       ,"Space"   ])
       $*. up::send_Up(["SC033"   ,"Del"     ])
       $*/ up::send_Up(["SC034"   ,"Tab"     ])
@@ -830,13 +854,13 @@
 ; _____________________________________________________________________________/ }}}1
 ; [Hotkeys] Chords ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
 
-    $*s::register_chordKey_DownR(1  ,"{s"   ,"{l"       ,"!{l"      ,"✠{Left"   ,""         )
-    $*d::register_chordKey_DownR(2  ,"{d"   ,"{k"       ,"!{k"      ,"✠{Down"   ,""         )
-    $*f::register_chordKey_DownR(3  ,"{t"   ,"{n"       ,"!{n"      ,"✠{Right"  ,""         )
+    $*s::register_chordKey_DownR(1  ,"{s"      ,"{l"       ,"!{l"      ,"✠{Left"   ,""         )
+    $*d::register_chordKey_DownR(2  ,"{d"      ,"{k"       ,"!{k"      ,"✠{Down"   ,""         )
+    $*f::register_chordKey_DownR(3  ,"{" . FT1 ,"{" . JN1  ,"!{" . JN1 ,"✠{Right"  ,""         )
 
-    $*s up::register_chordKey_Up(1  ,"{s"   ,"{l"    ,""    ,"{Left"   ,""         )
-    $*d up::register_chordKey_Up(2  ,"{d"   ,"{k"    ,""    ,"{Down"   ,""         )
-    $*f up::register_chordKey_Up(3  ,"{t"   ,"{n"    ,""    ,"{Right"  ,""         )
+    $*s up::register_chordKey_Up(1  ,"{s"      ,"{l"       ,""         ,"{Left"   ,""         )
+    $*d up::register_chordKey_Up(2  ,"{d"      ,"{k"       ,""         ,"{Down"   ,""         )
+    $*f up::register_chordKey_Up(3  ,"{" . FT1 ,"{" . JN1  ,""         ,"{Right"  ,""         )
 
 ; _____________________________________________________________________________/ }}}1
 #HotIf

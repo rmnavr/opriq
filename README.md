@@ -3,7 +3,7 @@
 
 # OPRIQ (OPtional RIght Qwerty)
 
-![OPRIQ Home Layer](https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true)
+<p align="center"> <img src="https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true" alt="OPRIQ Home Layer" /> </p>
 
 OPRIQ is keyboard layout with possibility of solo-left-handed-typing of any possible keys combinations.
 You can even code with only left hand (see demo below).

@@ -27,10 +27,10 @@ It is built on [AutoHotKey v2.0](https://www.autohotkey.com/) and currently work
 Table of Contents:
 - [Demonstrations](#Demonstrations)
 - [How it works](#How-it-works)
+- [TFNJ Variation](#TFNJ-Variation)
 - [Second language support](#Second-language-support)
-- [Variations](#Variations)
-- [Requirements](#Requirements)
 - [Known Issues](#Known-Issues)
+- [Requirements](#Requirements)
 - [Installation](#Installation)
 
 <!-- __________________________________________________________________________/ }}}1 -->
@@ -83,7 +83,7 @@ OPRIQ tray icon will change accordingly.
   > Also there is `TEXT2ALT` layer (reached by holding both `TAB` and `Space`),
   > but it is just a `TEXT2` with all keys seen as if `LAlt` is pressed.
   > This layer enables user to send `LAlt`-modified keys, while user's thumb is already busy with `Space` key.
-* 3 **chords** (simultaneous key presses) at home row that enable entering `BS`/`Enter`/`Delete`
+* 3 **chords** (simultaneous key presses) for left hand at home row that enable entering `BS`/`Enter`/`Delete`
   keys from `HOME` layer. Modifiers (Alt/Ctrl/Shift) work with chords too.
   > In the long run I found chords to be less crippling on the left hand than reaching to `BS`/`Enter`/`Delete`
   > from `NAVIGATION` layer.
@@ -92,7 +92,7 @@ OPRIQ tray icon will change accordingly.
   (`RAlt` will still be able to open `NAVIGATION` layer though).
   You can see if timer is active via GUI (described further).
   > Timer feature becomes crucial once you exceed 60 wpm two-handed typing speed.
-  > Due to this timer, when you are speed-typing, you will not need to worry about accidentally
+  > Thanks to this timer, when you are speed-typing, you will not need to worry about accidentally
   > holding `Space` for too long (thus unwantedly opening `TEXT2` layer) and things like that.
 
 Alt+TAB has a special recognition:
@@ -103,7 +103,7 @@ Alt+TAB has a special recognition:
 
 Games (or other software) that require holding `TAB`/`Space`/`S`/`D`/`T` might work bad with OPRIQ.
 `TAB`/`Space` will open layers, `S`/`D`/`T` will send chords if pressed simultaneously.
-Im most games this is not what you want.
+In most games this is not what you want.
 
 For such a case you can use `ONLY2H` mode, in which keyboard has no one-handed features (it's chords and layers),
 although it keeps it's main layout. You'll still have `NAVIGATION` layer reachable through `RAlt`,
@@ -118,26 +118,27 @@ and `CNFG` layer as usual.
 
 ## Configuration layer
 
-Hold `LCtrl` (bottom left key of keyboard) to open `CNFG` layer.
+Hold `LCtrl` (usually placed at bottom left key of keyboard) to open `CNFG` layer.
 
 <p align="center">
 <img src="https://github.com/rmnavr/opriq/blob/main/Docs/CNFG.png?raw=true" alt="LAYER CNFG" />
 </p>
 
 You can do all sorts of things in `CNFG` layer including:
-* **Switch modes**: `1L2H` <-> `ONLY2H`
-* **Suspend** and **Activate** app. Suspend deactivates all hotkeys except Suspend/Activate/Reload commands on `CNFG` layer.
-* **Reload** App. Use it when smth is stuck.
-* Activate **CAPS Lock** (including for unstucking it, see [Known Issues](#Known-Issues))
-* Activate **mini-GUI** — it will indicate active mode (`1L2H` or `ONLY2H`) and for `1L2H` will also show
-  if 2-handed-timer is active (indicating that 1L-features are suppresed for ~1 second) 
+* `LCtrl + 1` switches to `1L2H` mode, `LCtrl + 2` switches to `ONLY2H` mode
+* `LCtrl + s` **suspends** and `LCtrl + a` **activate** OPRIQ app. Suspend deactivates all hotkeys except Suspend/Activate/Reload commands on `CNFG` layer.
+* `LCtrl + tilde` **reloads** OPRIQ. Use it when smth is stuck.
+* `LCtrl + c` acts as **CAPS Lock** key (you might require it for unstucking unwanted CAPS, see [Known Issues](#Known-Issues))
+* `LCtrl + g` activates **mini-GUI** window — it will indicate active mode (`1L2H` or `ONLY2H`) and for `1L2H` will also show
+  if 2-handed-timer is active (indicating that 1L-features are suppresed for ~1 second).
+  Try reloading App if GUI is not visible (it will place itself on top of all windows).
 
 <!-- __________________________________________________________________________/ }}}1 -->
 <!-- TFNJ ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # TFNJ Variation
 
-**By default variation described below is turned off, because I don't think it fits well for general user.**
+**By default, variation described below is turned off, because I don't think it fits well for general user.**
 
 I personally use OPRIQ with T/F and N/J keys swapped (because T and N are much more frequent than F and J).
 This change is accordingly propagated to all modes/layers/chords.
@@ -157,7 +158,6 @@ activate_TFNJ := True
 ```
 
 <!-- __________________________________________________________________________/ }}}1 -->
-
 <!-- Second language support ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # Second language support
@@ -165,7 +165,6 @@ activate_TFNJ := True
 ru-lang, ZHGIEZH
 
 <!-- __________________________________________________________________________/ }}}1 -->
-
 <!-- Issues ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # Known Issues
@@ -184,23 +183,26 @@ ru-lang, ZHGIEZH
 
 Few times during a work day below issues might occur:
 * Holding `RAlt` (which supposed to only open `NAVIGATION` layer), sometimes also sends original `RAlt` key. Any subsequent key presses work as usual.
-* `CAPS` sometimes fires unwantedly (instead of `LCtrl`)
+* `CAPS` sometimes fires unwantedly (instead of acting as `LCtrl`)
 
 `RAlt` (AltGr) and `CAPS` are notorious for creating problems in AutoHotKey.
 The only decent solution I came up with is **performing some minimal remappings on register level** via Sharpkeys or similar software.
+Make remaps shown on the picture, and OPRIQ will recognize F13/F14/F15 accordingly.
+Be aware that you'll loose your original CAPS/LCtrl/RAlt though (when keyboard is used without OPRIQ).
 
 > When using Sharpkeys, you can load binary file [for_Sharpkeys/opriq_ff_remaps.skl](for_Sharpkeys/opriq_ff_remaps.skl) with preconfiged remaps.
 
-Make shown remaps and OPRIQ will recognize F13/F14/F15 accordingly. Be aware that you'll loose your original CAPS/LCtrl/RAlt though (when keyboard is used without OPRIQ).
 <p align="center">
 <img src="https://github.com/rmnavr/opriq/blob/main/for_Sharpkeys/FF_remaps.png?raw=true" alt="Remaps for Sharpkeys" />
 </p>
+
+**These remappings are NOT absolutely required. Especially if issues above do not irritate you that much.**
 
 ## Bugs
 
 There are 2 known bugs which I am trying to solve. Their frequency is like 1..2 times during a work day.
 * Entering letters with `Shift` sometimes holds `Shift` pressed.
-  When it happens, just press left and right `Shift`s (not necessarily at the same time) and it will unstuck.
+  When it happens, just press left and right `Shift` (not necessarily at the same time) and it will unstuck.
 * In `ONLY2H` mode, chording keys might stuck (although there are no chords in `ONLY2H`). Press key again and it will unstuck.
 
 <!-- __________________________________________________________________________/ }}}1 -->
@@ -214,7 +216,7 @@ Software:
 * OPRIQ needs to be launched when **standard english QWERTY layout** is currently selected in the system
 
 Hardware:
-* You'll need **standard ANSI/ISO-keyboard** (all docs are build around ANSI keyboard, however changes to ISO should be obvious)
+* You'll need **standard ANSI/ISO-keyboard** (all docs are made for ANSI keyboard, however changes to ISO should be obvious)
 * Ideally keyboard should have **6NKRO support** (anti-ghosting), although not obligatory
   > Without 6NKRO some tricky key combinations (like `Alt+Shift+Space+Q`) might not work depending on keyboard.
   > Still 99% of any reasonable key combination will probably work, and remaining 1% will be pressable with two hands as usual.
@@ -228,8 +230,8 @@ Hardware:
 
 There 2 ways to launch OPRIQ.
 
-> For both those options if you want to completely get rid of [RALt and CAPS Lock issues](#Known-Issues),
-> make described remaps at register level. It is not required though.
+> For both those options if you want to completely get rid of [RAlt and CAPS Lock issues](#Known-Issues),
+> make remaps (descriped in that chapter) at register level. It is not required though.
 
 ## Without installing AutoHotKey (simplier way)
 
@@ -239,6 +241,8 @@ There 2 ways to launch OPRIQ.
 4. You'll see OPRIQ icon in tray indicating it is now working.
 
 ## With AutoHotKey
+
+Choose this option if you want to run modified OPRIQ code.
 
 1. Install [AutoHotKey v2.0](https://www.autohotkey.com/)
 2. Download `OPRIQ.ahk2`, `OPRIQ_01.png` and `OPRIQ_02.png` to some folder.

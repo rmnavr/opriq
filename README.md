@@ -3,9 +3,18 @@
 
 # OPRIQ (OPtional RIght Qwerty)
 
-OPRIQ is keyboard layout with possibility of solo-left-handed-typing of any possible keys combinations.
-You can even code with only left hand (see demo below). 
-Also, solo-left-handed-typing does NOT prevent you from fast two-handed typing.
+OPRIQ is keyboard layout with possibility of solo-left-handed-typing of any possible keys combinations
+(you can even code with just left hand).
+Solo-left-handed-typing does not prevent two-handed typing in any way.
+OPRIQ doesn't require any special keyboard, and builds on standard QWERTY layout
+(so learning it should be a breeze).
+
+> OPRIQ development took 8 years (2013-2021) with rigorous testing of 5 vastly
+> different layout iterations each built from scratch
+> (including building hardware prototypes and complete relearning of typing for each iteration).
+> Most of those iterations were also very far from QWERTY layout.
+> Point is: **to a smallest single little detail OPRIQ was
+> forged in battle and can stand by it's design decisions**.
 
 <p align="center">
 <img src="https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true" alt="OPRIQ Home Layer" />
@@ -41,7 +50,7 @@ Standard ANSI-keyboards are used in videos below. Key-caps are colored for bette
 [![OPRIQ 1-handed coding](https://github.com/rmnavr/opriq/blob/main/Docs/1h_coding.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_coding.mp4)
 
 <!-- __________________________________________________________________________/ }}}1 -->
-<!-- Description ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
+<!-- How it works ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
 # How it works
 
@@ -49,11 +58,11 @@ Standard ANSI-keyboards are used in videos below. Key-caps are colored for bette
 
 OPRIQ has 2 distinct modes:
 * `1L2H` — main mode, you can type both with solo-left hand or with both hands
-  > naming `1L2H` is a shorthand for phrase "solo-left-handed OR two-handed".
+  > Naming `1L2H` is a shorthand for phrase "solo-left-handed OR two-handed"
 * `ONLY2H` — auxiliary mode in which one-handed typing features are completely turned off;
-  it is as compatibility feature for games and software that respond bad to 1L2H mode
+  it is a compatibility feature for games and software that respond bad to 1L2H mode
 
-# MODE 1L2H
+## MODE 1L2H (main mode)
 
 <p align="center">
 <img src="https://github.com/rmnavr/opriq/blob/main/Docs/1L2H.png?raw=true" alt="MODE 1L2H" />
@@ -64,26 +73,29 @@ OPRIQ has 2 distinct modes:
   * `HOME`
   * `TEXT2` (hold `Space` to reach it)
   * `NAVIGATION` (hold `TAB` or `RAlt` to reach it)
-  > Also there is `TEXT2ALT` layer, but it is just a `TEXT2` with all keys seen as if `LAlt` is pressed.
+  > Also there is `TEXT2ALT` layer (reached by holding both `TAB` and `Space`),
+  > but it is just a `TEXT2` with all keys seen as if `LAlt` is pressed.
   > This layer enables user to send `LAlt`-modified keys, while user's thumb is already busy with `Space` key.
-* 3 **chords** (simultaneous key presses) at homerow that enable `BS`,
-  `Enter` and `Delete` keys from `HOME` layer. Modifiers (Alt/Ctrl/Shift) work with chords too.
-  > In the long run I find chrods less crippling on the left hand than reaching to `BS`/`Enter`/`Delete`
+* 3 **chords** (simultaneous key presses) at homerow that enable entering `BS`/`Enter`/`Delete`
+  > keys from `HOME` layer. Modifiers (Alt/Ctrl/Shift) work with chords too.
+  > In the long run I found chords to be less crippling on the left hand than reaching to `BS`/`Enter`/`Delete`
   > from `NAVIGATION` layer.
 * Pressing any of right-handed keys will disable `SPACE`/`TAB` from their layer-changing features,
   and will also disable **chords** — all of that **for a timer of 1 second**
-  (`RAlt` will still be able to open `NAVIGATION` layer though).
+  (`RAlt` will still be able to open `NAVIGATION` layer though). You can see if timer is active via GUI (describe further).
   > This feature becomes crucial once you exceed 60 wpm two-handed typing speed.
   > Because when you are speed-typing, you will not need to worry about accidentally
   > holding `Space` for too long (thus unwantedly opening `TEXT2` layer) and things like that.
 
-Notice special recognition of Alt+TAB:
+Alt+TAB has a special recognition:
 * If you hold `LAlt` before pressing `TAB`, standard Alt+TAB windows feature will activate without delay
-* You should press `TAB` BEFORE holding `LAlt` if you want reach `NAVIGATION` layer (to press `LAlt+Home` or smth)
+* You should press `TAB` BEFORE holding `LAlt` if you want reach `NAVIGATION` layer (when you aim to press `LAlt+Home` or smth)
+
+## MODE ONLY2H (compatibility mode)
+
+Games that require holding `Space`/`S`/`D`/`T` 
 
 <!-- __________________________________________________________________________/ }}}1 -->
-
-
 
 
 <!-- Overview ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
@@ -116,13 +128,6 @@ Requirements:
   > OPRIQ idea can be implemented on QMK, on Linux, Mac, etc. I currently don't have plans of doing it myself though.
 * OPRIQ builds from **standard english QWERTY layout** 
 
-My personal OPRIQ story:
-* OPRIQ development took 8 years (2013-2021) with rigorous battle-testing of 5 vastly different layout iterations each built from scratch
-  (including complete relearning of typing for each iteration)
-* My current typing speed in OPRIQ is (normal/record): 95/115 wpm two-handed, 55/75 wpm one-handed
-* I use OPRIQ mainly for CAD work: entering hotkeys with left hand, mousing with right hand
-* No, I normaly don't use OPRIQ for one-handed coding, I use 2 hands for coding like a sane person
-* Since 2021 I type only in OPRIQ and consider it to be my endgame layout
 
 <!-- __________________________________________________________________________/ }}}1 -->
 
@@ -215,4 +220,12 @@ Not all games support 1h-mode properly:
 4. You'll see OPRIQ tray icon, indicating it is now working
 
 <!-- __________________________________________________________________________/ }}}1 -->
+
+# My personal remarks on OPRIQ
+
+* Since 2021 I type only in OPRIQ and consider it to be my endgame layout. 
+  I don't plan on changing any of core OPRIQ ideas or developing new layout.
+* My current typing speed in OPRIQ is (normal/record): 95/115 wpm two-handed, 55/75 wpm one-handed
+* I use OPRIQ mainly for CAD work: entering hotkeys with left hand, mousing with right hand
+* No, I normaly don't use OPRIQ for one-handed coding, I use 2 hands for coding like a sane person
 

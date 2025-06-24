@@ -175,49 +175,42 @@ However I recommend trying Base version first to see if OPRIQ overall works for 
 
 # Known Issues
 
-Sometimes (like few times during a work day) below issues occur:
-* Holding RAlt (which supposed to only open Navigation layer), sometimes also sends original RAlt key. Any subsequent key presses work as usual.
-* CAPS Lock sometimes fires unwantedly (instead of LCtrl)
+# Limitations
 
-RAlt (AltGr) and CAPS are notorious for creating problems in AutoHotKey.
-The only solution I came up with is **performing some minimal remappings on register level** via Sharpkeys or similar software.
+* OPRIQ does not work in Windows log-in screen. Treat your keyboard as normal QWERTY in this case.
+* Some protected forms in internet browsers (like finance-related) will process keyboard keys as if OPRIQ is not running
+* Working with remote devices might be challenging. Sometimes OPRIQ on your local machine will be able to send correct keys to remote device.
+  Sometimes it is better to run OPRIQ directly on remote machine. I think it heavily depends on type of remote connection.
 
-> When using Sharpkeys, you can load file [for_Sharpkeys/opriq_ff_remaps.skl](for_Sharpkeys/opriq_ff_remaps.skl) with preconfiged remaps.
+> Changing source language to smth like C++/Rust, or building QMK version of OPRIQ might solve those issues.
+> I don't plan to implement any of that though.
 
-Make shown remaps and OPRIQ will recognize F13/F14/F15 accordingly. Be aware that you'll loose your original CAPS/LCtrl/RAlt though.
+## Partially solved AutoHotKey issues
+
+Few times during a work day below issues might occur:
+* Holding `RAlt` (which supposed to only open `NAVIGATION` layer), sometimes also sends original `RAlt` key. Any subsequent key presses work as usual.
+* `CAPS` sometimes fires unwantedly (instead of `LCtrl`)
+
+`RAlt` (AltGr) and `CAPS` are notorious for creating problems in AutoHotKey.
+The only decent solution I came up with is **performing some minimal remappings on register level** via Sharpkeys or similar software.
+
+> When using Sharpkeys, you can load binary file [for_Sharpkeys/opriq_ff_remaps.skl](for_Sharpkeys/opriq_ff_remaps.skl) with preconfiged remaps.
+
+Make shown remaps and OPRIQ will recognize F13/F14/F15 accordingly. Be aware that you'll loose your original CAPS/LCtrl/RAlt though (when keyboard is used without OPRIQ).
 <p align="center">
 <img src="https://github.com/rmnavr/opriq/blob/main/for_Sharpkeys/FF_remaps.png?raw=true" alt="Remaps for Sharpkeys" />
 </p>
 
-## Shift sometimes sticks
+## Bugs
 
-Entering letters with Shift sometimes holds Shift pressed. When it happens, just press left and right Shifts (not necessarily at the same time) and it will unstuck.
-
-*I am working on this issue. It should be solvable at AutoHotKey level.*
+There are 2 known bugs which I am trying to solve. Their frequency is like 1..2 times during a work day.
+* Entering letters with `Shift` sometimes holds `Shift` pressed.
+  When it happens, just press left and right `Shift`s (not necessarily at the same time) and it will unstuck.
+* In `ONLY2H` mode, chording keys might stuck (although there are no chords in `ONLY2H`). Press key again and it will unstuck.
 
 <!-- __________________________________________________________________________/ }}}1 -->
 <!-- Limitations ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 
-# Known Limitations
-
-Desktop usage:
-* OPRIQ does not work in Windows log-in screen. Treat your keyboard as normal QWERTY in this case.
-* Some protected forms in internet browsers (like finance-related) will process keyboard keys as if OPRIQ is not running
-* Working with remote devices:
-  * Sometimes OPRIQ on your local machine will be able to send correct keys to remote device. Sometimes not.
-  * Sometimes running OPRIQ direclty on remote machine will solve the issue. Sometimes not.
-
-Hardware limitations:
-* On keyboards without 6NKRO some tricky key combinations won't be recognized (in all the membrane keyboards I used it usually were some obscure seldomly used hotkeys).
-  You still can enter those keys normally via 2 hands.
-* If you use DVORAK or other non-QWERTY layout, OPRIQ will not work correctly
-
-Not all games support 1h-mode properly:
-* One-shot keys usually work without problems (great for CAD-like games like Shapez 2 or Turing Complete)
-* Letter/number-keys that require holding double-function or chording keys will produce unwanted result:
-  * for example, `Space` (usually working as jump in games) will not have "hold Space for longer jump" capability
-  * another example is holding `s+d` (usually working as "move down left" in games) — it might send chord for `BS`, which is usually not what you want
-* Anyway, **dedicated 2h-mode** solves all aformentioned gaming issues
 
 <!-- __________________________________________________________________________/ }}}1 -->
 <!-- Install ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->

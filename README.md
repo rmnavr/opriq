@@ -24,8 +24,6 @@ OPRIQ shines when working in hotkey-heavy software like Photoshop, various CADs 
 
 It is built on [AutoHotKey v2.0](https://www.autohotkey.com/) and currently works only on Windows.
 
-
-
 Table of Contents:
 - [Demonstrations](#Demonstrations)
 - [How it works](#How-it-works)
@@ -50,6 +48,11 @@ Standard ANSI-keyboards are used in videos below. Key-caps are colored for bette
 *1-handed coding with OPRIQ layout:*
 
 [![OPRIQ 1-handed coding](https://github.com/rmnavr/opriq/blob/main/Docs/1h_coding.png?raw=true)](https://ravrlab.ru/csblog/opriq/files/opriq_coding.mp4)
+
+My current (2025) typing speeds in OPRIQ (normal/record):
+* 95/115 wpm two-handed
+* 55/75 wpm one-handed text
+* ~40 wpm one-handed coding
 
 <!-- __________________________________________________________________________/ }}}1 -->
 <!-- How it works ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
@@ -172,20 +175,19 @@ However I recommend trying Base version first to see if OPRIQ overall works for 
 
 # Known Issues
 
-Currently sometimes (like few times during a work day) below issues occur.
+Sometimes (like few times during a work day) below issues occur:
+* Holding RAlt (which supposed to only open Navigation layer), sometimes also sends original RAlt key. Any subsequent key presses work as usual.
+* CAPS Lock sometimes fires unwantedly (instead of LCtrl)
 
-## RAlt sometimes sends Alt (along with opening Nav layer)
+RAlt (AltGr) and CAPS are notorious for creating problems in AutoHotKey.
+The only solution I came up with is **performing some minimal remappings on register level** via Sharpkeys or similar software.
 
-Holding RAlt (which supposed to only open Navigation layer), sometimes also sends original RAlt key. Any subsequent key presses work as usual.
+> When using Sharpkeys, you can load file [for_Sharpkeys/opriq_ff_remaps.skl](for_Sharpkeys/opriq_ff_remaps.skl) with preconfiged remaps.
 
-RAlt (AltGr) is notorious for creating problems in AutoHotKey.
-So the only solution I came up with is **remapping RAlt to F14 on register level** via Sharpkeys or similar software.
-OPRIQ will recognize F14 accordingly.
-
-## CAPS Lock sometimes fires unwantedly (instead of LCtrl)
-
-Same issue as with RAlt. Same solution also: **remap CAPS to F13** via Sharpkeys or similar software.
-OPRIQ will recognize F13 accordingly.
+Make shown remaps and OPRIQ will recognize F13/F14/F15 accordingly. Be aware that you'll loose your original CAPS/LCtrl/RAlt though.
+<p align="center">
+<img src="https://github.com/rmnavr/opriq/blob/main/for_Sharpkeys/FF_remaps.png?raw=true" alt="Remaps for Sharpkeys" />
+</p>
 
 ## Shift sometimes sticks
 
@@ -229,15 +231,6 @@ Not all games support 1h-mode properly:
 4. You'll see OPRIQ tray icon, indicating it is now working
 
 <!-- __________________________________________________________________________/ }}}1 -->
-
-# My personal remarks on OPRIQ
-
-* Since 2021 I type only in OPRIQ and consider it to be my endgame layout. 
-  I don't plan on changing any of core OPRIQ ideas or developing new layout.
-* My current typing speed in OPRIQ is (normal/record): 95/115 wpm two-handed, 55/75 wpm one-handed.
-  My record speed on QWERTY was previously 115 wpm too.
-* I use OPRIQ mainly for CAD work: entering hotkeys with left hand, mousing with right hand
-* No, I normaly don't use OPRIQ for one-handed coding, I use 2 hands
 
 <!-- Overview ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
 

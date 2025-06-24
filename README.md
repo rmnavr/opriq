@@ -4,15 +4,15 @@
 # OPRIQ (OPtional RIght Qwerty)
 
 OPRIQ is keyboard layout with possibility of solo-left-handed-typing of any possible keys combinations.
-You can even code with only left hand (see demo below).
-
-Most importantly, solo-left-handed-typing does NOT prevent you from two-handed typing.
+You can even code with only left hand (see demo below). 
+Also, solo-left-handed-typing does NOT prevent you from fast two-handed typing.
 
 <p align="center">
 <img src="https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true" alt="OPRIQ Home Layer" />
 </p>
 
 OPRIQ was designed mainly for usage in hotkey-heavy software like Photoshop, various CADs and similar.
+It is built on [AutoHotKey v2.0](https://www.autohotkey.com/) and currently works only on Windows.
 
 Table of Contents:
 - [Demonstrations](#Demonstrations)
@@ -49,20 +49,37 @@ Standard ANSI-keyboards are used in videos below. Key-caps are colored for bette
 
 OPRIQ has 2 distinct modes:
 * `1L2H` — main mode, you can type both with solo-left hand or with both hands
+  > naming `1L2H` is a shorthand for phrase "solo-left-handed OR two-handed".
 * `ONLY2H` — auxiliary mode in which one-handed typing features are completely turned off;
   it is as compatibility feature for games and software that respond bad to 1L2H mode
 
 # MODE 1L2H
 
-Naming `1L2H` is a shorthand for "solo-left-handed OR two-handed".
-
-
-
 <p align="center">
 <img src="https://github.com/rmnavr/opriq/blob/main/Docs/1L2H.png?raw=true" alt="MODE 1L2H" />
 </p>
 
+`1L2H` mode builds on several things:
+* 3 main **layers**:
+  * `HOME`
+  * `TEXT2` (hold `Space` to reach it)
+  * `NAVIGATION` (hold `TAB` or `RAlt` to reach it)
+  > Also there is `TEXT2ALT` layer, but it is just a `TEXT2` with all keys seen as if `LAlt` is pressed.
+  > This layer enables user to send `LAlt`-modified keys, while user's thumb is already busy with `Space` key.
+* 3 **chords** (simultaneous key presses) at homerow that enable `BS`,
+  `Enter` and `Delete` keys from `HOME` layer. Modifiers (Alt/Ctrl/Shift) work with chords too.
+  > In the long run I find chrods less crippling on the left hand than reaching to `BS`/`Enter`/`Delete`
+  > from `NAVIGATION` layer.
+* Pressing any of right-handed keys will disable `SPACE`/`TAB` from their layer-changing features,
+  and will also disable **chords** — all of that **for a timer of 1 second**
+  (`RAlt` will still be able to open `NAVIGATION` layer though).
+  > This feature becomes crucial once you exceed 60 wpm two-handed typing speed.
+  > Because when you are speed-typing, you will not need to worry about accidentally
+  > holding `Space` for too long (thus unwantedly opening `TEXT2` layer) and things like that.
 
+Notice special recognition of Alt+TAB:
+* If you hold `LAlt` before pressing `TAB`, standard Alt+TAB windows feature will activate without delay
+* You should press `TAB` BEFORE holding `LAlt` if you want reach `NAVIGATION` layer (to press `LAlt+Home` or smth)
 
 <!-- __________________________________________________________________________/ }}}1 -->
 

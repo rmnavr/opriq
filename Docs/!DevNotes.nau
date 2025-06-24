@@ -145,7 +145,8 @@
 		| Architecture:	Architecture was based on «calc_cur_layer()», and the only #If pragma was for mouse layer
 
 // ____________________________________________________________________________/ }}}1
-	
+// Software to check robustness ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1
+
 	Software to check KB robustness:
 	- Bespoke (good for testing tracking-system)
 	- Shapez2 (I actually played perfectly in it with v031)
@@ -153,17 +154,24 @@
 	- Midinous
 	- Noita
 
-	SendMode "Input"
-	A_MenuMaskKey := "vk00sc000"
+// ____________________________________________________________________________/ }}}1
 
-	TODO:
-    - chording unpressing upd
-	- doc on unpressing func
+====================================================================================================
 
-	- Shift stuck
-	- 2hmode stucks normal keys in gaming sometimes
-	- GUI placement
-	- it beeps
-	- suspend should suspend everything except cnfg layer
+	Todo later:
+    - better unpressing tracking
+	- Shift-stuch, ONLY2H-stuck issues
+	- symbols layer
 
+	Publish:
+	- 2nd layer support (ZHGIEZH x2) 
+	- highlight Excel file
+	- exit opriq if you are stuck
+	- Excel: «block most of features» — give explicitely
+	- make sure TFNJ/RAVR are turned off (in code and Excel)
+	- update pictures
+	- troubleshooting (exit app, reload)
+
+	Code immediate:
 	- TFNJ for 2hmode!!!
+	- GUI placement

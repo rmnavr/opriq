@@ -3,12 +3,12 @@
 
 # OPRIQ (OPtional RIght Qwerty)
 
-![2 main layers of OPRIQ layout](https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true)
+![OPRIQ Home Layer](https://github.com/rmnavr/opriq/blob/main/Docs/Intro.png?raw=true)
 
 OPRIQ is keyboard layout with possibility of solo-left-handed-typing of any possible keys combinations.
 You can even code with only left hand (see demo below).
-Normal 2-handed-typing works with all the bells-and-whistles too (like navigation and extra-symbols layer).
-And 2-handed-typing does NOT require tedious mode-switch.
+Normal 2-handed-typing works with all the bells-and-whistles too (like navigation and extra-symbols layers).
+And 2-handed-typing does NOT require tedious mode-switch (like in most other one-handed layouts).
 
 OPRIQ was designed mainly for usage in hotkey-heavy software like Photoshop, various CADs and similar.
 

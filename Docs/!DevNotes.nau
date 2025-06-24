@@ -155,3 +155,7 @@
 
 	SendMode "Input"
 	A_MenuMaskKey := "vk00sc000"
+
+	TODO:
+    - chording unpressing upd
+	- doc on unpressing func

@@ -126,7 +126,7 @@ Hold `LCtrl` (usually placed at bottom left key of keyboard) to open `CNFG` laye
 
 You can do all sorts of things in `CNFG` layer including:
 * `LCtrl + 1` switches to `1L2H` mode, `LCtrl + 2` switches to `ONLY2H` mode
-* `LCtrl + s` **suspends** and `LCtrl + a` **activate** OPRIQ app. Suspend deactivates all hotkeys except Suspend/Activate/Reload commands on `CNFG` layer.
+* `LCtrl + s` **suspends** and `LCtrl + a` **activates** OPRIQ. Suspend deactivates all hotkeys except Suspend/Activate/Reload commands on `CNFG` layer.
 * `LCtrl + tilde` **reloads** OPRIQ. Use it when smth is stuck.
 * `LCtrl + c` acts as **CAPS Lock** key (you might require it for unstucking unwanted CAPS, see [Known Issues](#Known-Issues))
 * `LCtrl + g` activates **mini-GUI** window — it will indicate active mode (`1L2H` or `ONLY2H`) and for `1L2H` will also show
@@ -156,6 +156,10 @@ to this:
 ```ahk
 activate_TFNJ := True
 ```
+
+> By the way, if you are into Vim, you might be interested that I simply relearned new placement of HJKL
+> (instead of trying to remap `n` to `j` all over the place).
+> It doesn't feel ackward in any way.
 
 <!-- __________________________________________________________________________/ }}}1 -->
 <!-- Second language support ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\ {{{1 -->
@@ -249,6 +253,13 @@ Choose this option if you want to run modified OPRIQ code.
 3. Make sure your active layout is QWERTY (if it's not, some keys might not work).
 4. Double-click `OPRIQ.ahk2` (or open it with `AutoHotKey64.exe` if `*.ahk2` file extension was not recognized automatically)
 5. You'll see OPRIQ icon in tray indicating it is now working.
+
+## Launching OPRIQ at Startup
+
+Place link to `OPRIQ.exe` or `OPRIQ.ahk2` to:
+```
+C:\Users\USERNAME\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
+```
 
 <!-- __________________________________________________________________________/ }}}1 -->
 
